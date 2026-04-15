@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Add Transaction - Uangku</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed-dim": "#42be65",
+                        "tertiary-fixed": "#a7f0ba",
+                        "primary-fixed-dim": "#78a9ff",
+                        "outline": "#8d8d8d",
+                        "on-primary-fixed-variant": "#0043ce",
+                        "on-secondary-fixed-variant": "#525252",
+                        "error-container": "#fff1f1",
+                        "on-tertiary-fixed": "#022d0d",
+                        "surface-container-highest": "#c6c6c6",
+                        "secondary": "#6f6f6f",
+                        "on-primary": "#ffffff",
+                        "on-surface": "#161616",
+                        "inverse-primary": "#78a9ff",
+                        "secondary-fixed-dim": "#c6c6c6",
+                        "inverse-surface": "#393939",
+                        "surface-container-high": "#e0e0e0",
+                        "on-secondary": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary": "#198038",
+                        "secondary-fixed": "#e0e0e0",
+                        "surface-variant": "#f4f4f4",
+                        "on-tertiary-container": "#044317",
+                        "surface-container": "#f4f4f4",
+                        "on-secondary-container": "#525252",
+                        "surface-container-low": "#f4f4f4",
+                        "on-error-container": "#750e13",
+                        "on-error": "#ffffff",
+                        "on-surface-variant": "#525252",
+                        "on-background": "#161616",
+                        "error": "#da1e28",
+                        "surface-bright": "#ffffff",
+                        "on-tertiary-fixed-variant": "#044317",
+                        "inverse-on-surface": "#f4f4f4",
+                        "outline-variant": "#e0e0e0",
+                        "surface": "#ffffff",
+                        "primary-container": "#d0e2ff",
+                        "secondary-container": "#e0e0e0",
+                        "on-secondary-fixed": "#161616",
+                        "tertiary-container": "#a7f0ba",
+                        "on-primary-fixed": "#001d6c",
+                        "surface-dim": "#e0e0e0",
+                        "primary-fixed": "#d0e2ff",
+                        "primary": "#0f62fe",
+                        "on-primary-container": "#161616",
+                        "background": "#ffffff",
+                        "surface-tint": "#0f62fe"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["IBM Plex Sans"],
+                        "body": ["IBM Plex Sans"],
+                        "label": ["IBM Plex Sans"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'IBM Plex Sans', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-background min-h-screen pb-32">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-4 h-12 bg-white dark:bg-zinc-950 border-b border-zinc-200 dark:border-zinc-800">
+<div class="flex items-center gap-3">
+<img alt="Uangku Logo" class="w-8 h-8 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuABbiFvZ7fUhFatwwtDtD2sw7zLSDvMnZ5tf5KLKjyL1nSydDJdrpkJs79qqmaWcb7lgG-KIF0FD5E-nAc6qw2TQDxdcxejmZ0zQ1dAde31lIFGNJccM9J6s5w5Nx_BYSWIZJoim9T0r8W11ebzqrRS65p9fPi12J--uMur0JAAC-Cx2D78lQKmLYCPwdxGpSvNEZCN2l843-ulP634u7B8C38t35BUuspV13Ws0AaztnFseC1L0ZAb-zpfiOgrxxNW6iYwZ1WFwh9k"/>
+<h1 class="text-lg font-semibold text-zinc-900 dark:text-zinc-50 tracking-tight">Uangku</h1>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors active:opacity-80">
+<span class="material-symbols-outlined text-zinc-500 dark:text-zinc-400" data-icon="account_circle">account_circle</span>
+</button>
+</div>
+</header>
+<main class="pt-12 max-w-lg mx-auto px-4 lg:px-0">
+<!-- Amount Header (Bento Style) -->
+<section class="mt-8 mb-6 p-6 bg-surface-container-low">
+<label class="text-xs font-semibold uppercase tracking-wider text-secondary mb-2 block">Amount</label>
+<div class="flex items-baseline gap-2">
+<span class="text-2xl font-light text-secondary">$</span>
+<span class="text-5xl font-semibold tracking-tighter text-on-surface">1,240.00</span>
+<span class="w-1 h-10 bg-primary animate-pulse ml-1"></span>
+</div>
+</section>
+<!-- Form Elements -->
+<div class="space-y-6">
+<!-- Type Selector -->
+<div class="grid grid-cols-2 gap-px bg-outline-variant p-px">
+<button class="bg-surface py-4 text-sm font-semibold flex items-center justify-center gap-2 text-primary border-b-2 border-primary">
+<span class="material-symbols-outlined" data-icon="arrow_downward">arrow_downward</span>
+                    Expense
+                </button>
+<button class="bg-surface-variant py-4 text-sm font-semibold flex items-center justify-center gap-2 text-secondary hover:bg-surface transition-colors">
+<span class="material-symbols-outlined" data-icon="arrow_upward">arrow_upward</span>
+                    Income
+                </button>
+</div>
+<!-- Inputs Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<!-- Category Select -->
+<div class="flex flex-col gap-1">
+<label class="text-xs font-semibold text-secondary px-1">Category</label>
+<div class="relative">
+<select class="w-full bg-surface-container border-b border-outline h-10 px-3 text-sm focus:border-primary focus:ring-0 appearance-none">
+<option>Food &amp; Dining</option>
+<option>Transport</option>
+<option>Utilities</option>
+<option>Shopping</option>
+<option>Entertainment</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-secondary text-lg" data-icon="expand_more">expand_more</span>
+</div>
+</div>
+<!-- Date Picker -->
+<div class="flex flex-col gap-1">
+<label class="text-xs font-semibold text-secondary px-1">Date</label>
+<input class="w-full bg-surface-container border-b border-outline h-10 px-3 text-sm focus:border-primary focus:ring-0" type="date" value="2023-11-24"/>
+</div>
+</div>
+<!-- Notes -->
+<div class="flex flex-col gap-1">
+<label class="text-xs font-semibold text-secondary px-1">Notes (Optional)</label>
+<input class="w-full bg-surface-container border-b border-outline h-10 px-3 text-sm focus:border-primary focus:ring-0" placeholder="Add a description..." type="text"/>
+</div>
+<!-- Keypad Section -->
+<div class="bg-surface-container-high p-4 grid grid-cols-3 gap-2 mt-4">
+<button class="h-14 bg-surface flex items-center justify-center text-xl font-medium active:bg-outline-variant transition-colors">1</button>
+<button class="h-14 bg-surface flex items-center justify-center text-xl font-medium active:bg-outline-variant transition-colors">2</button>
+<button class="h-14 bg-surface flex items-center justify-center text-xl font-medium active:bg-outline-variant transition-colors">3</button>
+<button class="h-14 bg-surface flex items-center justify-center text-xl font-medium active:bg-outline-variant transition-colors">4</button>
+<button class="h-14 bg-surface flex items-center justify-center text-xl font-medium active:bg-outline-variant transition-colors">5</button>
+<button class="h-14 bg-surface flex items-center justify-center text-xl font-medium active:bg-outline-variant transition-colors">6</button>
+<button class="h-14 bg-surface flex items-center justify-center text-xl font-medium active:bg-outline-variant transition-colors">7</button>
+<button class="h-14 bg-surface flex items-center justify-center text-xl font-medium active:bg-outline-variant transition-colors">8</button>
+<button class="h-14 bg-surface flex items-center justify-center text-xl font-medium active:bg-outline-variant transition-colors">9</button>
+<button class="h-14 bg-surface flex items-center justify-center text-xl font-medium active:bg-outline-variant transition-colors">.</button>
+<button class="h-14 bg-surface flex items-center justify-center text-xl font-medium active:bg-outline-variant transition-colors">0</button>
+<button class="h-14 bg-surface-variant flex items-center justify-center text-xl font-medium active:bg-outline-variant transition-colors">
+<span class="material-symbols-outlined" data-icon="backspace">backspace</span>
+</button>
+</div>
+<!-- Submit Button -->
+<button class="w-full bg-primary text-on-primary h-12 flex items-center justify-center font-semibold text-sm uppercase tracking-widest hover:brightness-110 active:scale-[0.98] transition-all">
+                Add Transaction
+            </button>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-16 bg-zinc-50 dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-800 md:hidden">
+<a class="flex flex-col items-center justify-center text-zinc-500 dark:text-zinc-400 pt-1.5 hover:text-zinc-900 dark:hover:text-zinc-100 active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-sans text-[12px] font-normal">Dashboard</span>
+</a>
+<a class="flex flex-col items-center justify-center text-zinc-500 dark:text-zinc-400 pt-1.5 hover:text-zinc-900 dark:hover:text-zinc-100 active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="receipt_long">receipt_long</span>
+<span class="font-sans text-[12px] font-normal">History</span>
+</a>
+<a class="flex flex-col items-center justify-center text-blue-600 dark:text-blue-400 border-t-2 border-blue-600 dark:border-blue-400 pt-1 active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="add_circle" style="font-variation-settings: 'FILL' 1;">add_circle</span>
+<span class="font-sans text-[12px] font-normal">Add</span>
+</a>
+<a class="flex flex-col items-center justify-center text-zinc-500 dark:text-zinc-400 pt-1.5 hover:text-zinc-900 dark:hover:text-zinc-100 active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-sans text-[12px] font-normal">Settings</span>
+</a>
+</nav>
+<!-- Desktop Sidebar/Nav Placeholder for context -->
+<div class="hidden md:flex fixed left-0 top-12 bottom-0 w-20 flex-col items-center py-8 bg-surface-container gap-8 border-r border-outline-variant">
+<span class="material-symbols-outlined text-secondary" data-icon="dashboard">dashboard</span>
+<span class="material-symbols-outlined text-secondary" data-icon="receipt_long">receipt_long</span>
+<span class="material-symbols-outlined text-primary" data-icon="add_circle" style="font-variation-settings: 'FILL' 1;">add_circle</span>
+<span class="material-symbols-outlined text-secondary" data-icon="settings">settings</span>
+</div>
+</body></html>

@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Uangku - Daily Expense Estimation</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed-dim": "#42be65",
+                        "tertiary-fixed": "#a7f0ba",
+                        "primary-fixed-dim": "#78a9ff",
+                        "outline": "#8d8d8d",
+                        "on-primary-fixed-variant": "#0043ce",
+                        "on-secondary-fixed-variant": "#525252",
+                        "error-container": "#fff1f1",
+                        "on-tertiary-fixed": "#022d0d",
+                        "surface-container-highest": "#c6c6c6",
+                        "secondary": "#6f6f6f",
+                        "on-primary": "#ffffff",
+                        "on-surface": "#161616",
+                        "inverse-primary": "#78a9ff",
+                        "secondary-fixed-dim": "#c6c6c6",
+                        "inverse-surface": "#393939",
+                        "surface-container-high": "#e0e0e0",
+                        "on-secondary": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary": "#198038",
+                        "secondary-fixed": "#e0e0e0",
+                        "surface-variant": "#f4f4f4",
+                        "on-tertiary-container": "#044317",
+                        "surface-container": "#f4f4f4",
+                        "on-secondary-container": "#525252",
+                        "surface-container-low": "#f4f4f4",
+                        "on-error-container": "#750e13",
+                        "on-error": "#ffffff",
+                        "on-surface-variant": "#525252",
+                        "on-background": "#161616",
+                        "error": "#da1e28",
+                        "surface-bright": "#ffffff",
+                        "on-tertiary-fixed-variant": "#044317",
+                        "inverse-on-surface": "#f4f4f4",
+                        "outline-variant": "#e0e0e0",
+                        "surface": "#ffffff",
+                        "primary-container": "#d0e2ff",
+                        "secondary-container": "#e0e0e0",
+                        "on-secondary-fixed": "#161616",
+                        "tertiary-container": "#a7f0ba",
+                        "on-primary-fixed": "#001d6c",
+                        "surface-dim": "#e0e0e0",
+                        "primary-fixed": "#d0e2ff",
+                        "primary": "#0f62fe",
+                        "on-primary-container": "#161616",
+                        "background": "#ffffff",
+                        "surface-tint": "#0f62fe"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0rem",
+                        "lg": "0rem",
+                        "xl": "0rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["IBM Plex Sans"],
+                        "body": ["IBM Plex Sans"],
+                        "label": ["IBM Plex Sans"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'IBM Plex Sans', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen pb-24">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-4 h-12 bg-white dark:bg-zinc-950 border-b border-zinc-200 dark:border-zinc-800">
+<div class="flex items-center gap-2">
+<img alt="Uangku Logo" class="w-8 h-8 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuABbiFvZ7fUhFatwwtDtD2sw7zLSDvMnZ5tf5KLKjyL1nSydDJdrpkJs79qqmaWcb7lgG-KIF0FD5E-nAc6qw2TQDxdcxejmZ0zQ1dAde31lIFGNJccM9J6s5w5Nx_BYSWIZJoim9T0r8W11ebzqrRS65p9fPi12J--uMur0JAAC-Cx2D78lQKmLYCPwdxGpSvNEZCN2l843-ulP634u7B8C38t35BUuspV13Ws0AaztnFseC1L0ZAb-zpfiOgrxxNW6iYwZ1WFwh9k"/>
+<span class="text-lg font-semibold text-zinc-900 dark:text-zinc-50 tracking-tight">Uangku</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors p-1 active:opacity-80 transition-opacity">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+</button>
+</div>
+</header>
+<main class="pt-16 px-4 max-w-5xl mx-auto space-y-6">
+<!-- Hero: Calculated Daily Limit -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-0 bg-surface-container border-b border-outline-variant">
+<div class="p-6 md:col-span-2 border-r border-outline-variant">
+<p class="text-xs font-semibold text-secondary uppercase tracking-widest mb-1">Calculated Daily Limit</p>
+<h1 class="text-5xl font-light text-on-surface mb-2">$120.00</h1>
+<p class="text-sm text-on-surface-variant max-w-md">Based on your average previous spending and current balance.</p>
+</div>
+<div class="p-6 bg-primary-container flex flex-col justify-center">
+<p class="text-xs font-semibold text-on-primary-fixed-variant uppercase tracking-widest mb-1">Remaining Daily Budget</p>
+<div class="flex items-baseline gap-2">
+<h2 class="text-4xl font-semibold text-on-surface">$42.15</h2>
+<span class="text-tertiary font-semibold flex items-center text-sm">
+<span class="material-symbols-outlined text-sm" data-icon="trending_up">trending_up</span>
+                        Safe
+                    </span>
+</div>
+<div class="w-full bg-white/50 h-1 mt-4 relative">
+<div class="bg-primary h-1" style="width: 65%;"></div>
+</div>
+<p class="text-[10px] mt-2 text-on-primary-fixed-variant">65% of daily limit consumed</p>
+</div>
+</section>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+<!-- 24h Estimation Tool -->
+<div class="md:col-span-7 bg-surface-container-low p-6 space-y-6">
+<div class="flex justify-between items-center">
+<h3 class="text-xl font-semibold text-on-surface">Next 24 Hours Estimator</h3>
+<span class="material-symbols-outlined text-secondary" data-icon="calculate">calculate</span>
+</div>
+<!-- Calculation Logic Info Box -->
+<div class="bg-white/50 border border-outline-variant p-3 flex gap-3 items-start">
+<span class="material-symbols-outlined text-primary text-lg" data-icon="info">info</span>
+<p class="text-[11px] leading-tight text-secondary italic">
+                        Limit Logic: <span class="text-on-surface font-medium">(Current Balance / Days Remaining)</span> adjusted by <span class="text-on-surface font-medium">(Average Previous Spending Trend)</span>.
+                    </p>
+</div>
+<div class="space-y-4">
+<div class="group">
+<label class="block text-xs font-semibold text-secondary mb-1">Planned Activity / Purchase</label>
+<input class="w-full bg-surface-container-high border-b border-outline p-2 focus:border-primary outline-none text-sm transition-colors" placeholder="e.g., Dinner with friends" type="text"/>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="group">
+<label class="block text-xs font-semibold text-secondary mb-1">Estimated Cost</label>
+<div class="relative">
+<span class="absolute left-2 top-2 text-sm text-secondary">$</span>
+<input class="w-full bg-surface-container-high border-b border-outline p-2 pl-6 focus:border-primary outline-none text-sm transition-colors" placeholder="0.00" type="number"/>
+</div>
+</div>
+<div class="group">
+<label class="block text-xs font-semibold text-secondary mb-1">Category</label>
+<select class="w-full bg-surface-container-high border-b border-outline p-2 focus:border-primary outline-none text-sm transition-colors">
+<option>Dining</option>
+<option>Transport</option>
+<option>Entertainment</option>
+<option>Groceries</option>
+</select>
+</div>
+</div>
+<button class="w-full bg-primary text-white py-3 px-4 text-sm font-semibold hover:bg-blue-700 transition-colors flex justify-center items-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+                        Apply to Estimation
+                    </button>
+</div>
+<!-- Estimation Summary -->
+<div class="pt-4 border-t border-outline-variant">
+<div class="flex justify-between items-center mb-2">
+<span class="text-sm text-on-surface">Current Projection</span>
+<span class="text-sm font-semibold">$77.85 total</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-sm text-on-surface">Post-expense Balance</span>
+<span class="text-sm font-semibold text-error">-$35.70 Over</span>
+</div>
+</div>
+</div>
+<!-- Recurring Bills Column -->
+<div class="md:col-span-5 space-y-4">
+<div class="bg-surface border border-outline-variant p-6">
+<div class="flex justify-between items-center mb-6">
+<h3 class="text-lg font-semibold text-on-surface">Upcoming Bills</h3>
+<span class="text-xs font-semibold bg-secondary-container px-2 py-0.5 text-on-secondary-container">7 Days</span>
+</div>
+<div class="space-y-0 divide-y divide-outline-variant">
+<!-- Bill Item -->
+<div class="py-3 flex items-center justify-between hover:bg-surface-variant px-2 -mx-2 transition-colors">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 bg-zinc-100 flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary text-sm" data-icon="speed">speed</span>
+</div>
+<div>
+<p class="text-sm font-semibold text-on-surface">Fiber Internet</p>
+<p class="text-[10px] text-secondary">Due in 2 days</p>
+</div>
+</div>
+<span class="text-sm font-semibold">$59.99</span>
+</div>
+<!-- Bill Item -->
+<div class="py-3 flex items-center justify-between hover:bg-surface-variant px-2 -mx-2 transition-colors">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 bg-zinc-100 flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary text-sm" data-icon="subscriptions">subscriptions</span>
+</div>
+<div>
+<p class="text-sm font-semibold text-on-surface">Cloud Storage</p>
+<p class="text-[10px] text-secondary">Due in 4 days</p>
+</div>
+</div>
+<span class="text-sm font-semibold">$9.99</span>
+</div>
+<!-- Bill Item -->
+<div class="py-3 flex items-center justify-between hover:bg-surface-variant px-2 -mx-2 transition-colors">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 bg-zinc-100 flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary text-sm" data-icon="electric_bolt">electric_bolt</span>
+</div>
+<div>
+<p class="text-sm font-semibold text-on-surface">Utility Bill</p>
+<p class="text-[10px] text-secondary">Due in 6 days</p>
+</div>
+</div>
+<span class="text-sm font-semibold">$142.50</span>
+</div>
+</div>
+<button class="w-full mt-6 border border-primary text-primary py-2 text-xs font-semibold hover:bg-primary hover:text-white transition-all">
+                        View Billing Calendar
+                    </button>
+</div>
+<!-- Analysis Card -->
+<div class="bg-inverse-surface p-4 text-inverse-on-surface flex items-start gap-4 shadow-lg">
+<span class="material-symbols-outlined text-primary-fixed-dim" data-icon="lightbulb">lightbulb</span>
+<div>
+<p class="text-xs font-semibold mb-1">Carbon Intelligence</p>
+<p class="text-xs opacity-80 leading-relaxed">Your spending trend is 15% higher than your balance-based limit. Tighten spending to avoid exhausting funds before the next cycle.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Recent Activity Table -->
+<section class="bg-white border border-outline-variant overflow-hidden">
+<div class="px-6 py-4 border-b border-outline-variant flex justify-between items-center">
+<h3 class="text-sm font-semibold text-on-surface">Today's Transactions</h3>
+<button class="text-xs text-primary font-semibold hover:underline">View All</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left text-sm">
+<thead>
+<tr class="bg-surface-container-low text-secondary text-[11px] uppercase tracking-wider">
+<th class="px-6 py-3 font-semibold">Merchant</th>
+<th class="px-6 py-3 font-semibold">Category</th>
+<th class="px-6 py-3 font-semibold">Status</th>
+<th class="px-6 py-3 font-semibold text-right">Amount</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<tr class="hover:bg-surface-container transition-colors">
+<td class="px-6 py-4 font-medium text-on-surface">Blue Bottle Coffee</td>
+<td class="px-6 py-4 text-secondary">Dining</td>
+<td class="px-6 py-4"><span class="px-2 py-0.5 bg-tertiary-fixed text-on-tertiary-fixed text-[10px] font-semibold">Cleared</span></td>
+<td class="px-6 py-4 text-right font-semibold">$6.75</td>
+</tr>
+<tr class="bg-surface-container-low hover:bg-surface-container transition-colors">
+<td class="px-6 py-4 font-medium text-on-surface">Whole Foods Market</td>
+<td class="px-6 py-4 text-secondary">Groceries</td>
+<td class="px-6 py-4"><span class="px-2 py-0.5 bg-tertiary-fixed text-on-tertiary-fixed text-[10px] font-semibold">Cleared</span></td>
+<td class="px-6 py-4 text-right font-semibold">$54.20</td>
+</tr>
+<tr class="hover:bg-surface-container transition-colors">
+<td class="px-6 py-4 font-medium text-on-surface">Uber Trip</td>
+<td class="px-6 py-4 text-secondary">Transport</td>
+<td class="px-6 py-4"><span class="px-2 py-0.5 bg-secondary-container text-on-secondary-container text-[10px] font-semibold">Pending</span></td>
+<td class="px-6 py-4 text-right font-semibold">$16.90</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-16 bg-zinc-50 dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-800">
+<button class="flex flex-col items-center justify-center text-blue-600 dark:text-blue-400 border-t-2 border-blue-600 dark:border-blue-400 pt-1 active:scale-95 transition-transform">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-sans text-[12px] font-normal">Dashboard</span>
+</button>
+<button class="flex flex-col items-center justify-center text-zinc-500 dark:text-zinc-400 pt-1.5 hover:text-zinc-900 dark:hover:text-zinc-100 active:scale-95 transition-transform">
+<span class="material-symbols-outlined" data-icon="receipt_long">receipt_long</span>
+<span class="font-sans text-[12px] font-normal">History</span>
+</button>
+<button class="flex flex-col items-center justify-center text-zinc-500 dark:text-zinc-400 pt-1.5 hover:text-zinc-900 dark:hover:text-zinc-100 active:scale-95 transition-transform">
+<span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
+<span class="font-sans text-[12px] font-normal">Add</span>
+</button>
+<button class="flex flex-col items-center justify-center text-zinc-500 dark:text-zinc-400 pt-1.5 hover:text-zinc-900 dark:hover:text-zinc-100 active:scale-95 transition-transform">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-sans text-[12px] font-normal">Settings</span>
+</button>
+</nav>
+</body></html>
