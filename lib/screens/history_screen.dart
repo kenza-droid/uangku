@@ -3,6 +3,9 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../providers/transaction_provider.dart';
 import '../models/transaction.dart';
+import 'add_transaction_screen.dart';
+
+import '../utils/transitions.dart';
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({super.key});
@@ -47,6 +50,14 @@ class _HistoryScreenState extends State<HistoryScreen> {
     return grouped;
   }
 
+  void _openEditScreen(Transaction t) {
+    Navigator.push(
+      context,
+      SlideUpRoute(page: AddTransactionScreen(editTransaction: t)),
+    );
+  }
+
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -61,7 +72,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
             provider.transactions.map((t) => t.category).toSet().toList();
 
         return Scaffold(
-          backgroundColor: Colors.white,
+          backgroundColor: colorScheme.surface,
           appBar: AppBar(
             title: const Text('Riwayat Transaksi',
                 style:
@@ -75,30 +86,32 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 child: TextField(
                   controller: _searchController,
                   onChanged: (v) => setState(() => _search = v),
+                  style: TextStyle(color: colorScheme.onSurface),
                   decoration: InputDecoration(
                     hintText: 'Cari transaksi...',
-                    prefixIcon: const Icon(Icons.search,
-                        size: 20, color: Colors.grey),
+                    hintStyle: TextStyle(color: colorScheme.outline),
+                    prefixIcon: Icon(Icons.search,
+                        size: 20, color: colorScheme.outline),
                     suffixIcon: _search.isNotEmpty
                         ? IconButton(
-                            icon: const Icon(Icons.clear,
-                                size: 18, color: Colors.grey),
+                            icon: Icon(Icons.clear,
+                                size: 18, color: colorScheme.outline),
                             onPressed: () {
                               _searchController.clear();
                               setState(() => _search = '');
                             })
                         : null,
                     filled: true,
-                    fillColor: const Color(0xFFF4F4F4),
-                    border: const UnderlineInputBorder(
+                    fillColor: colorScheme.surfaceVariant,
+                    border: UnderlineInputBorder(
                         borderSide:
-                            BorderSide(color: Color(0xFFE0E0E0))),
-                    enabledBorder: const UnderlineInputBorder(
+                            BorderSide(color: colorScheme.outlineVariant)),
+                    enabledBorder: UnderlineInputBorder(
                         borderSide:
-                            BorderSide(color: Color(0xFFE0E0E0))),
-                    focusedBorder: const UnderlineInputBorder(
+                            BorderSide(color: colorScheme.outlineVariant)),
+                    focusedBorder: UnderlineInputBorder(
                         borderSide:
-                            BorderSide(color: Color(0xFF0F62FE))),
+                            BorderSide(color: colorScheme.primary)),
                     contentPadding:
                         const EdgeInsets.symmetric(vertical: 12),
                   ),
@@ -137,6 +150,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         final picked =
                             await showModalBottomSheet<String>(
                           context: context,
+                          backgroundColor: colorScheme.surface,
                           shape: const RoundedRectangleBorder(
                               borderRadius: BorderRadius.vertical(
                                   top: Radius.circular(16))),
@@ -144,7 +158,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
                             shrinkWrap: true,
                             children: categories
                                 .map((c) => ListTile(
-                                      title: Text(c),
+                                      title: Text(c,
+                                          style: TextStyle(
+                                              color: colorScheme.onSurface)),
                                       selected: _filterCategory == c,
                                       onTap: () =>
                                           Navigator.pop(ctx, c),
@@ -169,21 +185,21 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 ),
               ),
 
-              const Divider(height: 1),
+              Divider(height: 1, color: colorScheme.outlineVariant),
 
               // List
               Expanded(
                 child: filtered.isEmpty
-                    ? const Center(
+                    ? Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(Icons.receipt_long_outlined,
-                                size: 56, color: Colors.grey),
-                            SizedBox(height: 12),
+                                size: 56, color: colorScheme.outline),
+                            const SizedBox(height: 12),
                             Text('Tidak ada transaksi',
                                 style: TextStyle(
-                                    color: Colors.grey, fontSize: 16)),
+                                    color: colorScheme.outline, fontSize: 16)),
                           ],
                         ),
                       )
@@ -209,10 +225,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                       MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(key.toUpperCase(),
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                             fontSize: 10,
                                             fontWeight: FontWeight.bold,
-                                            color: Colors.grey,
+                                            color: colorScheme.outline,
                                             letterSpacing: 1.2)),
                                     Text(
                                       _fmt(dayTotal),
@@ -251,9 +267,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
       bool active = false,
       Color? color,
       VoidCallback? onTap}) {
-    final fg = active ? Colors.white : const Color(0xFF525252);
+    final colorScheme = Theme.of(context).colorScheme;
+    final fg = active ? Colors.white : colorScheme.onSurface.withOpacity(0.7);
     final bg =
-        active ? (color ?? const Color(0xFF0F62FE)) : const Color(0xFFF4F4F4);
+        active ? (color ?? colorScheme.primary) : colorScheme.surfaceVariant;
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -297,8 +314,11 @@ class _HistoryScreenState extends State<HistoryScreen> {
         return await showDialog<bool>(
           context: context,
           builder: (ctx) => AlertDialog(
-            title: const Text('Hapus Transaksi?'),
-            content: Text('Yakin ingin menghapus "${t.title}"?'),
+            backgroundColor: cs.surface,
+            title: Text('Hapus Transaksi?',
+                style: TextStyle(color: cs.onSurface)),
+            content: Text('Yakin ingin menghapus "${t.title}"?',
+                style: TextStyle(color: cs.onSurface)),
             actions: [
               TextButton(
                   onPressed: () => Navigator.pop(ctx, false),
@@ -312,44 +332,56 @@ class _HistoryScreenState extends State<HistoryScreen> {
         );
       },
       onDismissed: (_) => provider.deleteTransaction(t.id),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        decoration: const BoxDecoration(
-            border:
-                Border(bottom: BorderSide(color: Color(0xFFF4F4F4)))),
-        child: Row(
-          children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration:
-                  const BoxDecoration(color: Color(0xFFF4F4F4)),
-              child: Icon(Transaction.categoryIcon(t.category),
-                  size: 20, color: const Color(0xFF161616)),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+      child: InkWell(
+        onTap: () => _openEditScreen(t),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+              border:
+                  Border(bottom: BorderSide(color: cs.outlineVariant.withOpacity(0.5)))),
+          child: Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration:
+                    BoxDecoration(color: cs.surfaceVariant),
+                child: Icon(Transaction.categoryIcon(t.category),
+                    size: 20, color: cs.onSurface),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(t.title,
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                            color: cs.onSurface)),
+                    Text(
+                        '${DateFormat('HH:mm', 'id_ID').format(t.date)} • ${t.category}',
+                        style: TextStyle(
+                            color: cs.outline, fontSize: 12)),
+                  ],
+                ),
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Text(t.title,
-                      style: const TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 14)),
                   Text(
-                      '${DateFormat('HH:mm', 'id_ID').format(t.date)} • ${t.category}',
-                      style: const TextStyle(
-                          color: Colors.grey, fontSize: 12)),
+                    '${t.isExpense ? '-' : '+'}${fmt.format(t.amount)}',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: t.isExpense ? cs.error : cs.tertiary,
+                        fontSize: 14),
+                  ),
+                  const SizedBox(height: 2),
+                  Icon(Icons.edit_outlined, size: 14, color: cs.outline),
                 ],
               ),
-            ),
-            Text(
-              '${t.isExpense ? '-' : '+'}${fmt.format(t.amount)}',
-              style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: t.isExpense ? cs.error : cs.tertiary,
-                  fontSize: 14),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

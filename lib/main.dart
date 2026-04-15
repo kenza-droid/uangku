@@ -7,6 +7,7 @@ import 'screens/dashboard_screen.dart';
 import 'screens/history_screen.dart';
 import 'screens/add_transaction_screen.dart';
 import 'screens/settings_screen.dart';
+import 'screens/splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,8 +20,15 @@ void main() async {
   );
 }
 
-class UangkuApp extends StatelessWidget {
+class UangkuApp extends StatefulWidget {
   const UangkuApp({super.key});
+
+  @override
+  State<UangkuApp> createState() => _UangkuAppState();
+}
+
+class _UangkuAppState extends State<UangkuApp> {
+  bool _showSplash = true;
 
   @override
   Widget build(BuildContext context) {
@@ -132,7 +140,9 @@ class UangkuApp extends StatelessWidget {
               }),
             ),
           ),
-          home: const MainNavigationShell(),
+          home: _showSplash
+              ? SplashScreen(onComplete: () => setState(() => _showSplash = false))
+              : const MainNavigationShell(),
         );
       },
     );
@@ -159,7 +169,25 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _screens[_selectedIndex],
+      body: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 300),
+        transitionBuilder: (Widget child, Animation<double> animation) {
+          return FadeTransition(
+            opacity: animation,
+            child: SlideTransition(
+              position: Tween<Offset>(
+                begin: const Offset(0.05, 0),
+                end: Offset.zero,
+              ).animate(animation),
+              child: child,
+            ),
+          );
+        },
+        child: Container(
+          key: ValueKey<int>(_selectedIndex),
+          child: _screens[_selectedIndex],
+        ),
+      ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           border: Border(top: BorderSide(color: Theme.of(context).colorScheme.outlineVariant)),

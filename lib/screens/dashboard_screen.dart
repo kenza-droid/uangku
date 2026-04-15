@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../providers/transaction_provider.dart';
 import '../models/transaction.dart';
+import 'add_transaction_screen.dart';
+import '../utils/transitions.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -36,7 +38,7 @@ class DashboardScreen extends StatelessWidget {
           ..sort((a, b) => b.value.compareTo(a.value));
 
         return Scaffold(
-          backgroundColor: Colors.white,
+          backgroundColor: cs.surface,
           appBar: AppBar(
             title: Row(
               children: [
@@ -46,10 +48,10 @@ class DashboardScreen extends StatelessWidget {
                   decoration: BoxDecoration(
                       color: cs.primary,
                       borderRadius: BorderRadius.circular(4)),
-                  child: const Center(
+                  child: Center(
                       child: Text('U',
                           style: TextStyle(
-                              color: Colors.white,
+                              color: cs.onPrimary,
                               fontWeight: FontWeight.bold,
                               fontSize: 18))),
                 ),
@@ -58,13 +60,15 @@ class DashboardScreen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Uangku',
+                      Text('Uangku',
                           style: TextStyle(
-                              fontWeight: FontWeight.w600, fontSize: 18)),
+                              fontWeight: FontWeight.w600,
+                              fontSize: 18,
+                              color: cs.onSurface)),
                       Text(
                           DateFormat('MMMM yyyy', 'id_ID').format(DateTime.now()),
-                          style: const TextStyle(
-                              fontSize: 11, color: Colors.grey)),
+                          style: TextStyle(
+                              fontSize: 11, color: cs.outline)),
                     ],
                   ),
                 ),
@@ -86,28 +90,28 @@ class DashboardScreen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('SALDO SAAT INI',
+                      Text('SALDO SAAT INI',
                           style: TextStyle(
                               fontSize: 10,
-                              color: Colors.white70,
+                              color: cs.onPrimary.withOpacity(0.7),
                               fontWeight: FontWeight.bold,
                               letterSpacing: 1.2)),
                       const SizedBox(height: 4),
                       Text(_fmt(balance),
-                          style: const TextStyle(
+                          style: TextStyle(
                               fontSize: 30,
                               fontWeight: FontWeight.bold,
-                              color: Colors.white)),
+                              color: cs.onPrimary)),
                       const SizedBox(height: 12),
                       Row(
                         children: [
                           Expanded(
                               child: _miniStat(
-                                  'Pemasukan', _fmt(income), Icons.arrow_upward)),
+                                  'Pemasukan', _fmt(income), Icons.arrow_upward, cs)),
                           const SizedBox(width: 16),
                           Expanded(
                               child: _miniStat('Pengeluaran', _fmt(expense),
-                                  Icons.arrow_downward)),
+                                  Icons.arrow_downward, cs)),
                         ],
                       ),
                     ],
@@ -119,17 +123,17 @@ class DashboardScreen extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                      border: Border.all(color: const Color(0xFFE0E0E0))),
+                      border: Border.all(color: cs.outlineVariant)),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text('BUDGET BULANAN',
+                          Text('BUDGET BULANAN',
                               style: TextStyle(
                                   fontSize: 10,
-                                  color: Colors.grey,
+                                  color: cs.outline,
                                   fontWeight: FontWeight.bold,
                                   letterSpacing: 1.1)),
                           Text('$budgetPct% terpakai',
@@ -144,7 +148,7 @@ class DashboardScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(2),
                         child: LinearProgressIndicator(
                           value: budgetRatio,
-                          backgroundColor: const Color(0xFFE0E0E0),
+                          backgroundColor: cs.outlineVariant,
                           valueColor:
                               AlwaysStoppedAnimation<Color>(budgetColor),
                           minHeight: 6,
@@ -153,35 +157,39 @@ class DashboardScreen extends StatelessWidget {
                       const SizedBox(height: 4),
                       Text(
                           '${_fmt(expense)} dari ${_fmt(provider.monthlyBudget)}',
-                          style: const TextStyle(
-                              fontSize: 11, color: Colors.grey)),
+                          style: TextStyle(
+                              fontSize: 11, color: cs.outline)),
                     ],
                   ),
                 ),
                 const SizedBox(height: 24),
 
                 // Weekly chart
-                const Text('Pengeluaran Mingguan',
-                    style:
-                        TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                Text('Pengeluaran Mingguan',
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: cs.onSurface)),
                 const SizedBox(height: 12),
                 Container(
                   padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-                  color: const Color(0xFFF4F4F4),
+                  color: cs.surfaceVariant,
                   child: Column(
                     children: [
                       SizedBox(
                         height: 140,
                         child: _WeeklyBarChart(
-                            data: provider.weeklyExpenses, color: cs.primary),
+                            data: provider.weeklyExpenses,
+                            color: cs.primary,
+                            bgColor: cs.outline.withOpacity(0.15)),
                       ),
                       const SizedBox(height: 6),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: ['Mg 1', 'Mg 2', 'Mg 3', 'Mg 4', 'Mg 5']
                             .map((w) => Text(w,
-                                style: const TextStyle(
-                                    fontSize: 10, color: Colors.grey)))
+                                style: TextStyle(
+                                    fontSize: 10, color: cs.outline)))
                             .toList(),
                       ),
                     ],
@@ -190,22 +198,24 @@ class DashboardScreen extends StatelessWidget {
                 const SizedBox(height: 24),
 
                 // Income vs Expense chart
-                const Text('Pemasukan vs Pengeluaran (6 Bulan)',
-                    style:
-                        TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                Text('Pemasukan vs Pengeluaran (6 Bulan)',
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: cs.onSurface)),
                 const SizedBox(height: 12),
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                      border: Border.all(color: const Color(0xFFE0E0E0))),
+                      border: Border.all(color: cs.outlineVariant)),
                   child: Column(
                     children: [
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          _legend('Pemasukan', cs.primary),
+                          _legend('Pemasukan', cs.primary, cs),
                           const SizedBox(width: 12),
-                          _legend('Pengeluaran', cs.error),
+                          _legend('Pengeluaran', cs.error, cs),
                         ],
                       ),
                       const SizedBox(height: 12),
@@ -218,7 +228,7 @@ class DashboardScreen extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 6),
-                      _monthLabels(),
+                      _monthLabels(cs),
                     ],
                   ),
                 ),
@@ -226,9 +236,11 @@ class DashboardScreen extends StatelessWidget {
 
                 // Category breakdown
                 if (catEntries.isNotEmpty) ...[
-                  const Text('Pengeluaran per Kategori',
+                  Text('Pengeluaran per Kategori',
                       style: TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.bold)),
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: cs.onSurface)),
                   const SizedBox(height: 12),
                   ...catEntries.take(5).map(
                         (e) => _categoryRow(e.key, e.value, expense, cs),
@@ -237,31 +249,33 @@ class DashboardScreen extends StatelessWidget {
                 ],
 
                 // Recent
-                const Text('Transaksi Terbaru',
-                    style:
-                        TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                Text('Transaksi Terbaru',
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: cs.onSurface)),
                 const SizedBox(height: 8),
                 provider.recentTransactions.isEmpty
-                    ? const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 32),
+                    ? Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 32),
                         child: Center(
                           child: Column(
                             children: [
                               Icon(Icons.receipt_long_outlined,
-                                  size: 48, color: Colors.grey),
-                              SizedBox(height: 8),
+                                  size: 48, color: cs.outline),
+                              const SizedBox(height: 8),
                               Text('Belum ada transaksi',
-                                  style: TextStyle(color: Colors.grey)),
+                                  style: TextStyle(color: cs.outline)),
                               Text('Tambahkan transaksi pertamamu!',
                                   style: TextStyle(
-                                      color: Colors.grey, fontSize: 12)),
+                                      color: cs.outline, fontSize: 12)),
                             ],
                           ),
                         ),
                       )
                     : Column(
                         children: provider.recentTransactions
-                            .map((t) => _txRow(t, cs))
+                            .map((t) => _txRow(t, cs, context))
                             .toList(),
                       ),
                 const SizedBox(height: 32),
@@ -273,36 +287,36 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  Widget _miniStat(String label, String value, IconData icon) {
+  Widget _miniStat(String label, String value, IconData icon, ColorScheme cs) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(children: [
-          Icon(icon, size: 12, color: Colors.white70),
+          Icon(icon, size: 12, color: cs.onPrimary.withOpacity(0.7)),
           const SizedBox(width: 4),
           Text(label,
-              style:
-                  const TextStyle(fontSize: 10, color: Colors.white70)),
+              style: TextStyle(
+                  fontSize: 10, color: cs.onPrimary.withOpacity(0.7))),
         ]),
         Text(value,
-            style: const TextStyle(
+            style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.bold,
-                color: Colors.white),
+                color: cs.onPrimary),
             overflow: TextOverflow.ellipsis),
       ],
     );
   }
 
-  Widget _legend(String label, Color color) {
+  Widget _legend(String label, Color color, ColorScheme cs) {
     return Row(children: [
       Container(width: 10, height: 10, color: color),
       const SizedBox(width: 4),
-      Text(label, style: const TextStyle(fontSize: 11, color: Colors.grey)),
+      Text(label, style: TextStyle(fontSize: 11, color: cs.outline)),
     ]);
   }
 
-  Widget _monthLabels() {
+  Widget _monthLabels(ColorScheme cs) {
     final now = DateTime.now();
     final months = List.generate(
         6, (i) => DateFormat('MMM', 'id_ID').format(DateTime(now.year, now.month - 5 + i)));
@@ -310,7 +324,7 @@ class DashboardScreen extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: months
           .map((m) =>
-              Text(m, style: const TextStyle(fontSize: 10, color: Colors.grey)))
+              Text(m, style: TextStyle(fontSize: 10, color: cs.outline)))
           .toList(),
     );
   }
@@ -334,8 +348,10 @@ class DashboardScreen extends StatelessWidget {
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
               Text(cat,
-                  style: const TextStyle(
-                      fontWeight: FontWeight.w500, fontSize: 13)),
+                  style: TextStyle(
+                      fontWeight: FontWeight.w500,
+                      fontSize: 13,
+                      color: cs.onSurface)),
               Text(
                   NumberFormat.currency(
                           locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0)
@@ -350,7 +366,7 @@ class DashboardScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(2),
               child: LinearProgressIndicator(
                 value: pct,
-                backgroundColor: const Color(0xFFE0E0E0),
+                backgroundColor: cs.outlineVariant,
                 valueColor: AlwaysStoppedAnimation<Color>(cs.primary),
                 minHeight: 3,
               ),
@@ -361,39 +377,49 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  Widget _txRow(Transaction t, ColorScheme cs) {
+  Widget _txRow(Transaction t, ColorScheme cs, BuildContext context) {
     final fmt =
         NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0);
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
-      decoration: const BoxDecoration(
-          border: Border(bottom: BorderSide(color: Color(0xFFF4F4F4)))),
-      child: Row(children: [
-        Container(
-          width: 38,
-          height: 38,
-          decoration: const BoxDecoration(color: Color(0xFFF4F4F4)),
-          child: Icon(Transaction.categoryIcon(t.category),
-              size: 18, color: const Color(0xFF161616)),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(t.title,
-                style: const TextStyle(
-                    fontWeight: FontWeight.bold, fontSize: 14)),
-            Text(DateFormat('dd MMM, HH:mm', 'id_ID').format(t.date),
-                style: const TextStyle(color: Colors.grey, fontSize: 12)),
-          ]),
-        ),
-        Text(
-          '${t.isExpense ? '-' : '+'}${fmt.format(t.amount)}',
-          style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: t.isExpense ? cs.error : cs.tertiary,
-              fontSize: 14),
-        ),
-      ]),
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+          context,
+          SlideUpRoute(page: AddTransactionScreen(editTransaction: t)),
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+        decoration: BoxDecoration(
+            border: Border(bottom: BorderSide(color: cs.outlineVariant.withOpacity(0.5)))),
+        child: Row(children: [
+          Container(
+            width: 38,
+            height: 38,
+            decoration: BoxDecoration(color: cs.surfaceVariant),
+            child: Icon(Transaction.categoryIcon(t.category),
+                size: 18, color: cs.onSurface),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(t.title,
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                      color: cs.onSurface)),
+              Text(DateFormat('dd MMM, HH:mm', 'id_ID').format(t.date),
+                  style: TextStyle(color: cs.outline, fontSize: 12)),
+            ]),
+          ),
+          Text(
+            '${t.isExpense ? '-' : '+'}${fmt.format(t.amount)}',
+            style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: t.isExpense ? cs.error : cs.tertiary,
+                fontSize: 14),
+          ),
+        ]),
+      ),
     );
   }
 }
@@ -403,12 +429,13 @@ class DashboardScreen extends StatelessWidget {
 class _WeeklyBarChart extends StatelessWidget {
   final List<double> data;
   final Color color;
-  const _WeeklyBarChart({required this.data, required this.color});
+  final Color bgColor;
+  const _WeeklyBarChart({required this.data, required this.color, required this.bgColor});
 
   @override
   Widget build(BuildContext context) {
     return CustomPaint(
-      painter: _BarPainter(data: data, color: color),
+      painter: _BarPainter(data: data, color: color, bgColor: bgColor),
       child: const SizedBox.expand(),
     );
   }
@@ -417,7 +444,8 @@ class _WeeklyBarChart extends StatelessWidget {
 class _BarPainter extends CustomPainter {
   final List<double> data;
   final Color color;
-  _BarPainter({required this.data, required this.color});
+  final Color bgColor;
+  _BarPainter({required this.data, required this.color, required this.bgColor});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -431,7 +459,7 @@ class _BarPainter extends CustomPainter {
       // bg
       canvas.drawRect(
         Rect.fromLTWH(x, 0, barW, chartH),
-        Paint()..color = Colors.grey.withOpacity(0.15),
+        Paint()..color = bgColor,
       );
       // bar
       if (maxVal > 0 && data[i] > 0) {

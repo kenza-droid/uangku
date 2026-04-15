@@ -13,7 +13,7 @@ class SettingsScreen extends StatelessWidget {
     return Consumer<TransactionProvider>(
       builder: (context, provider, _) {
         return Scaffold(
-          backgroundColor: const Color(0xFFF4F4F4),
+          backgroundColor: colorScheme.surfaceVariant,
           appBar: AppBar(
             title: const Text('Pengaturan',
                 style:
@@ -23,7 +23,7 @@ class SettingsScreen extends StatelessWidget {
             children: [
               // Profile
               Container(
-                color: Colors.white,
+                color: colorScheme.surface,
                 padding: const EdgeInsets.all(24),
                 child: Row(
                   children: [
@@ -34,8 +34,8 @@ class SettingsScreen extends StatelessWidget {
                         provider.userName.isNotEmpty
                             ? provider.userName[0].toUpperCase()
                             : 'U',
-                        style: const TextStyle(
-                            color: Colors.white,
+                        style: TextStyle(
+                            color: colorScheme.onPrimary,
                             fontSize: 24,
                             fontWeight: FontWeight.bold),
                       ),
@@ -46,11 +46,13 @@ class SettingsScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(provider.userName,
-                              style: const TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.bold)),
-                          const Text('Pengguna Uangku',
                               style: TextStyle(
-                                  color: Colors.grey, fontSize: 14)),
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: colorScheme.onSurface)),
+                          Text('Pengguna Uangku',
+                              style: TextStyle(
+                                  color: colorScheme.outline, fontSize: 14)),
                         ],
                       ),
                     ),
@@ -62,7 +64,10 @@ class SettingsScreen extends StatelessWidget {
                 ),
               ),
 
-              _sectionHeader('KEUANGAN'),
+              _sectionHeader('TAMPILAN', colorScheme),
+              _themeTile(context, provider, colorScheme),
+
+              _sectionHeader('KEUANGAN', colorScheme),
               _tile(
                 icon: Icons.account_balance_wallet_outlined,
                 title: 'Budget Bulanan',
@@ -80,7 +85,7 @@ class SettingsScreen extends StatelessWidget {
                 cs: colorScheme,
               ),
 
-              _sectionHeader('AKUN'),
+              _sectionHeader('AKUN', colorScheme),
               _tile(
                 icon: Icons.payments_outlined,
                 title: 'Mata Uang',
@@ -88,7 +93,7 @@ class SettingsScreen extends StatelessWidget {
                 cs: colorScheme,
               ),
 
-              _sectionHeader('DATA'),
+              _sectionHeader('DATA', colorScheme),
               _tile(
                 icon: Icons.delete_outline,
                 title: 'Hapus Semua Data',
@@ -98,7 +103,7 @@ class SettingsScreen extends StatelessWidget {
                 cs: colorScheme,
               ),
 
-              _sectionHeader('TENTANG'),
+              _sectionHeader('TENTANG', colorScheme),
               _tile(
                   icon: Icons.info_outline,
                   title: 'Versi Aplikasi',
@@ -106,13 +111,13 @@ class SettingsScreen extends StatelessWidget {
                   cs: colorScheme),
 
               const SizedBox(height: 48),
-              const Center(
+              Center(
                 child: Text(
                   'UANGKU V1.0.0',
                   style: TextStyle(
                       fontSize: 10,
                       fontWeight: FontWeight.bold,
-                      color: Colors.grey,
+                      color: colorScheme.outline,
                       letterSpacing: 2),
                 ),
               ),
@@ -124,15 +129,119 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  Widget _sectionHeader(String title) {
+  Widget _sectionHeader(String title, ColorScheme cs) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
       child: Text(title,
-          style: const TextStyle(
+          style: TextStyle(
               fontSize: 10,
               fontWeight: FontWeight.bold,
-              color: Colors.grey,
+              color: cs.outline,
               letterSpacing: 1.5)),
+    );
+  }
+
+  Widget _themeTile(
+      BuildContext context, TransactionProvider provider, ColorScheme cs) {
+    String themeName;
+    IconData themeIcon;
+    switch (provider.themeMode) {
+      case ThemeMode.light:
+        themeName = 'Terang';
+        themeIcon = Icons.light_mode;
+        break;
+      case ThemeMode.dark:
+        themeName = 'Gelap';
+        themeIcon = Icons.dark_mode;
+        break;
+      default:
+        themeName = 'Sistem';
+        themeIcon = Icons.brightness_auto;
+    }
+
+    return Container(
+      color: cs.surface,
+      child: ListTile(
+        leading: Icon(themeIcon, color: cs.outline, size: 22),
+        title: Text('Tema Aplikasi',
+            style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: cs.onSurface)),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(themeName,
+                style: TextStyle(
+                    fontSize: 14,
+                    color: cs.primary,
+                    fontWeight: FontWeight.w500)),
+            const SizedBox(width: 4),
+            Icon(Icons.chevron_right, size: 16, color: cs.outline),
+          ],
+        ),
+        onTap: () => _showThemePicker(context, provider, cs),
+        shape: Border(bottom: BorderSide(color: cs.outlineVariant)),
+      ),
+    );
+  }
+
+  Future<void> _showThemePicker(
+      BuildContext context, TransactionProvider provider, ColorScheme cs) async {
+    final picked = await showModalBottomSheet<ThemeMode>(
+      context: context,
+      backgroundColor: cs.surface,
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
+      builder: (ctx) => Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Text('Pilih Tema',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: cs.onSurface)),
+            ),
+            Divider(height: 1, color: cs.outlineVariant),
+            _themeOption(ctx, Icons.brightness_auto, 'Ikuti Sistem',
+                'Otomatis menyesuaikan tema perangkat',
+                ThemeMode.system, provider.themeMode, cs),
+            _themeOption(ctx, Icons.light_mode, 'Mode Terang',
+                'Tampilan terang untuk penggunaan siang hari',
+                ThemeMode.light, provider.themeMode, cs),
+            _themeOption(ctx, Icons.dark_mode, 'Mode Gelap',
+                'Tampilan gelap yang nyaman untuk mata',
+                ThemeMode.dark, provider.themeMode, cs),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
+    );
+    if (picked != null) {
+      provider.setThemeMode(picked);
+    }
+  }
+
+  Widget _themeOption(BuildContext ctx, IconData icon, String title,
+      String subtitle, ThemeMode mode, ThemeMode current, ColorScheme cs) {
+    final isSelected = mode == current;
+    return ListTile(
+      leading: Icon(icon,
+          color: isSelected ? cs.primary : cs.outline),
+      title: Text(title,
+          style: TextStyle(
+              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+              color: cs.onSurface)),
+      subtitle: Text(subtitle,
+          style: TextStyle(fontSize: 12, color: cs.outline)),
+      trailing: isSelected
+          ? Icon(Icons.check_circle, color: cs.primary)
+          : null,
+      onTap: () => Navigator.pop(ctx, mode),
     );
   }
 
@@ -144,10 +253,10 @@ class SettingsScreen extends StatelessWidget {
     VoidCallback? onTap,
     bool isDestructive = false,
   }) {
-    final textColor = isDestructive ? cs.error : const Color(0xFF161616);
-    final iconColor = isDestructive ? cs.error : Colors.grey;
+    final textColor = isDestructive ? cs.error : cs.onSurface;
+    final iconColor = isDestructive ? cs.error : cs.outline;
     return Container(
-      color: Colors.white,
+      color: cs.surface,
       child: ListTile(
         leading: Icon(icon, color: iconColor, size: 22),
         title: Text(title,
@@ -166,27 +275,32 @@ class SettingsScreen extends StatelessWidget {
                       fontWeight: FontWeight.w500)),
             if (onTap != null) ...[
               const SizedBox(width: 4),
-              const Icon(Icons.chevron_right, size: 16, color: Colors.grey),
+              Icon(Icons.chevron_right, size: 16, color: cs.outline),
             ]
           ],
         ),
         onTap: onTap,
-        shape: const Border(bottom: BorderSide(color: Color(0xFFE0E0E0))),
+        shape: Border(bottom: BorderSide(color: cs.outlineVariant)),
       ),
     );
   }
 
   Future<void> _editName(
       BuildContext context, TransactionProvider provider) async {
+    final cs = Theme.of(context).colorScheme;
     final ctrl = TextEditingController(text: provider.userName);
     final result = await showDialog<String>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Ubah Nama'),
+        backgroundColor: cs.surface,
+        title: Text('Ubah Nama', style: TextStyle(color: cs.onSurface)),
         content: TextField(
           controller: ctrl,
           autofocus: true,
-          decoration: const InputDecoration(hintText: 'Nama kamu'),
+          style: TextStyle(color: cs.onSurface),
+          decoration: InputDecoration(
+              hintText: 'Nama kamu',
+              hintStyle: TextStyle(color: cs.outline)),
           onSubmitted: (v) => Navigator.pop(ctx, v),
         ),
         actions: [
@@ -206,18 +320,24 @@ class SettingsScreen extends StatelessWidget {
 
   Future<void> _editBudget(
       BuildContext context, TransactionProvider provider) async {
+    final cs = Theme.of(context).colorScheme;
     final ctrl = TextEditingController(
         text: provider.monthlyBudget.toStringAsFixed(0));
     final result = await showDialog<String>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Budget Bulanan (Rp)'),
+        backgroundColor: cs.surface,
+        title: Text('Budget Bulanan (Rp)',
+            style: TextStyle(color: cs.onSurface)),
         content: TextField(
           controller: ctrl,
           autofocus: true,
           keyboardType: TextInputType.number,
-          decoration: const InputDecoration(
-              prefixText: 'Rp ', hintText: '5000000'),
+          style: TextStyle(color: cs.onSurface),
+          decoration: InputDecoration(
+              prefixText: 'Rp ',
+              hintText: '5000000',
+              hintStyle: TextStyle(color: cs.outline)),
           onSubmitted: (v) => Navigator.pop(ctx, v),
         ),
         actions: [
@@ -244,9 +364,12 @@ class SettingsScreen extends StatelessWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Hapus Semua Data?'),
-        content: const Text(
-            'Semua transaksi akan dihapus permanen. Tindakan ini tidak bisa dibatalkan.'),
+        backgroundColor: cs.surface,
+        title: Text('Hapus Semua Data?',
+            style: TextStyle(color: cs.onSurface)),
+        content: Text(
+            'Semua transaksi akan dihapus permanen. Tindakan ini tidak bisa dibatalkan.',
+            style: TextStyle(color: cs.onSurface)),
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(ctx, false),

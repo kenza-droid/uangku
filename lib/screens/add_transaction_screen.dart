@@ -5,7 +5,9 @@ import '../providers/transaction_provider.dart';
 import '../models/transaction.dart';
 
 class AddTransactionScreen extends StatefulWidget {
-  const AddTransactionScreen({super.key});
+  final Transaction? editTransaction;
+
+  const AddTransactionScreen({super.key, this.editTransaction});
 
   @override
   State<AddTransactionScreen> createState() => _AddTransactionScreenState();
@@ -20,6 +22,23 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   String _notes = '';
 
   final _noteController = TextEditingController();
+
+  bool get _isEditing => widget.editTransaction != null;
+
+  @override
+  void initState() {
+    super.initState();
+    if (_isEditing) {
+      final t = widget.editTransaction!;
+      isExpense = t.isExpense;
+      _amountDigits = t.amount.toStringAsFixed(0);
+      _title = t.title;
+      _category = t.category;
+      _date = t.date;
+      _notes = t.notes;
+      _noteController.text = t.notes;
+    }
+  }
 
   @override
   void dispose() {
@@ -52,27 +71,45 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   Future<void> _pickCategory() async {
     final categories =
         isExpense ? Transaction.expenseCategories : Transaction.incomeCategories;
+    final cs = Theme.of(context).colorScheme;
     final picked = await showModalBottomSheet<String>(
       context: context,
+      backgroundColor: cs.surface,
+      isScrollControlled: true,
       shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
-      builder: (ctx) => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8),
+      builder: (ctx) => ConstrainedBox(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(ctx).size.height * 0.6,
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Padding(
-              padding: EdgeInsets.all(16),
+            Padding(
+              padding: const EdgeInsets.all(16),
               child: Text('Pilih Kategori',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: cs.onSurface)),
             ),
-            const Divider(height: 1),
-            ...categories.map((c) => ListTile(
-                  leading: Icon(Transaction.categoryIcon(c),
-                      color: const Color(0xFF0F62FE)),
-                  title: Text(c),
-                  onTap: () => Navigator.pop(ctx, c),
-                )),
+            Divider(height: 1, color: cs.outlineVariant),
+            Flexible(
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: categories.length,
+                itemBuilder: (ctx, i) {
+                  final c = categories[i];
+                  return ListTile(
+                    leading: Icon(Transaction.categoryIcon(c),
+                        color: cs.primary),
+                    title: Text(c, style: TextStyle(color: cs.onSurface)),
+                    onTap: () => Navigator.pop(ctx, c),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 8),
           ],
         ),
       ),
@@ -91,16 +128,20 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   }
 
   Future<void> _pickTitle() async {
+    final cs = Theme.of(context).colorScheme;
     final ctrl = TextEditingController(text: _title);
     final result = await showDialog<String>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Nama Transaksi'),
+        backgroundColor: cs.surface,
+        title: Text('Nama Transaksi', style: TextStyle(color: cs.onSurface)),
         content: TextField(
           controller: ctrl,
           autofocus: true,
-          decoration:
-              const InputDecoration(hintText: 'Contoh: Makan siang, Gaji...'),
+          style: TextStyle(color: cs.onSurface),
+          decoration: InputDecoration(
+              hintText: 'Contoh: Makan siang, Gaji...',
+              hintStyle: TextStyle(color: cs.outline)),
           onSubmitted: (v) => Navigator.pop(ctx, v),
         ),
         actions: [
@@ -132,25 +173,44 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
       return;
     }
 
-    await context.read<TransactionProvider>().addTransaction(
-          title: _title,
-          amount: _amountValue,
-          category: _category,
-          date: _date,
-          isExpense: isExpense,
-          notes: _notes,
-        );
+    final provider = context.read<TransactionProvider>();
 
-    if (mounted) {
-      _snack('Transaksi berhasil disimpan!', success: true);
-      setState(() {
-        _amountDigits = '0';
-        _title = '';
-        _category = '';
-        _date = DateTime.now();
-        _notes = '';
-        _noteController.clear();
-      });
+    if (_isEditing) {
+      final updated = widget.editTransaction!.copyWith(
+        title: _title,
+        amount: _amountValue,
+        category: _category,
+        date: _date,
+        isExpense: isExpense,
+        notes: _notes,
+      );
+      await provider.updateTransaction(updated);
+
+      if (mounted) {
+        _snack('Transaksi berhasil diperbarui!', success: true);
+        Navigator.pop(context, true);
+      }
+    } else {
+      await provider.addTransaction(
+        title: _title,
+        amount: _amountValue,
+        category: _category,
+        date: _date,
+        isExpense: isExpense,
+        notes: _notes,
+      );
+
+      if (mounted) {
+        _snack('Transaksi berhasil disimpan!', success: true);
+        setState(() {
+          _amountDigits = '0';
+          _title = '';
+          _category = '';
+          _date = DateTime.now();
+          _notes = '';
+          _noteController.clear();
+        });
+      }
     }
   }
 
@@ -166,10 +226,18 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: colorScheme.surface,
       appBar: AppBar(
-        title: const Text('Tambah Transaksi',
-            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18)),
+        title: Text(
+          _isEditing ? 'Edit Transaksi' : 'Tambah Transaksi',
+          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
+        ),
+        leading: _isEditing
+            ? IconButton(
+                icon: const Icon(Icons.close),
+                onPressed: () => Navigator.pop(context),
+              )
+            : null,
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -177,7 +245,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
           children: [
             // Toggle Expense / Income
             Container(
-              color: const Color(0xFFE0E0E0),
+              color: colorScheme.outlineVariant,
               child: Row(
                 children: [
                   _buildToggle('Pengeluaran', Icons.arrow_downward, true, colorScheme),
@@ -189,32 +257,34 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
             // Amount display
             Container(
               width: double.infinity,
-              color: const Color(0xFFF4F4F4),
+              color: colorScheme.surfaceVariant,
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('JUMLAH',
+                  Text('JUMLAH',
                       style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.bold,
-                          color: Colors.grey,
+                          color: colorScheme.outline,
                           letterSpacing: 1.5)),
                   const SizedBox(height: 8),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      const Text('Rp',
+                      Text('Rp',
                           style: TextStyle(
                               fontSize: 20,
-                              color: Colors.grey,
+                              color: colorScheme.outline,
                               fontWeight: FontWeight.w300)),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
                           _formattedAmount,
-                          style: const TextStyle(
-                              fontSize: 36, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              fontSize: 36,
+                              fontWeight: FontWeight.bold,
+                              color: colorScheme.onSurface),
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
@@ -269,33 +339,33 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                   const SizedBox(height: 8),
                   // Notes
                   Container(
-                    decoration: const BoxDecoration(
-                      color: Color(0xFFF4F4F4),
+                    decoration: BoxDecoration(
+                      color: colorScheme.surfaceVariant,
                       border: Border(
-                          bottom: BorderSide(color: Color(0xFF8D8D8D))),
+                          bottom: BorderSide(color: colorScheme.outline)),
                     ),
                     padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('CATATAN (OPSIONAL)',
+                        Text('CATATAN (OPSIONAL)',
                             style: TextStyle(
                                 fontSize: 9,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.grey,
+                                color: colorScheme.outline,
                                 letterSpacing: 1.2)),
                         TextField(
                           controller: _noteController,
                           onChanged: (v) => _notes = v,
-                          decoration: const InputDecoration(
+                          decoration: InputDecoration(
                             border: InputBorder.none,
                             hintText: 'Tambahkan catatan...',
                             hintStyle:
-                                TextStyle(fontSize: 14, color: Colors.grey),
+                                TextStyle(fontSize: 14, color: colorScheme.outline),
                             isDense: true,
-                            contentPadding: EdgeInsets.only(top: 4),
+                            contentPadding: const EdgeInsets.only(top: 4),
                           ),
-                          style: const TextStyle(fontSize: 14),
+                          style: TextStyle(fontSize: 14, color: colorScheme.onSurface),
                           maxLines: 2,
                         ),
                       ],
@@ -307,7 +377,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
             // Numpad
             Container(
-              color: const Color(0xFFE0E0E0),
+              color: colorScheme.outlineVariant,
               padding: const EdgeInsets.all(2),
               child: GridView.count(
                 shrinkWrap: true,
@@ -334,12 +404,13 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                   onPressed: _save,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: colorScheme.primary,
-                    foregroundColor: Colors.white,
+                    foregroundColor: colorScheme.onPrimary,
                     shape: const RoundedRectangleBorder(
                         borderRadius: BorderRadius.zero),
                   ),
-                  child: const Text('SIMPAN TRANSAKSI',
-                      style: TextStyle(
+                  child: Text(
+                      _isEditing ? 'SIMPAN PERUBAHAN' : 'SIMPAN TRANSAKSI',
+                      style: const TextStyle(
                           fontWeight: FontWeight.bold, letterSpacing: 1.2)),
                 ),
               ),
@@ -358,15 +429,15 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
       child: GestureDetector(
         onTap: () => setState(() {
           isExpense = forExpense;
-          _category = '';
+          if (!_isEditing) _category = '';
         }),
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 14),
           decoration: BoxDecoration(
-            color: active ? Colors.white : Colors.transparent,
+            color: active ? colorScheme.surface : Colors.transparent,
             border: active
-                ? const Border(
-                    bottom: BorderSide(color: Color(0xFF0F62FE), width: 2))
+                ? Border(
+                    bottom: BorderSide(color: colorScheme.primary, width: 2))
                 : null,
           ),
           child: Row(
@@ -391,21 +462,21 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
   Widget _buildFormField(String label, String value, IconData trailing,
       {bool isEmpty = false}) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
-      decoration: const BoxDecoration(
-        color: Color(0xFFF4F4F4),
-        border:
-            Border(bottom: BorderSide(color: Color(0xFF8D8D8D))),
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceVariant,
+        border: Border(bottom: BorderSide(color: colorScheme.outline)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(label,
-              style: const TextStyle(
+              style: TextStyle(
                   fontSize: 9,
                   fontWeight: FontWeight.bold,
-                  color: Colors.grey,
+                  color: colorScheme.outline,
                   letterSpacing: 1.2)),
           const SizedBox(height: 4),
           Row(
@@ -416,11 +487,11 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                   value,
                   style: TextStyle(
                       fontSize: 14,
-                      color: isEmpty ? Colors.grey : const Color(0xFF161616)),
+                      color: isEmpty ? colorScheme.outline : colorScheme.onSurface),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
-              Icon(trailing, size: 16, color: Colors.grey),
+              Icon(trailing, size: 16, color: colorScheme.outline),
             ],
           ),
         ],
@@ -429,16 +500,20 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   }
 
   Widget _buildKey(String label, {bool isBackspace = false}) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Material(
-      color: isBackspace ? const Color(0xFFF4F4F4) : Colors.white,
+      color: isBackspace ? colorScheme.surfaceVariant : colorScheme.surface,
       child: InkWell(
         onTap: () => _onKeyTap(label),
         child: Center(
           child: isBackspace
-              ? const Icon(Icons.backspace_outlined, size: 20)
+              ? Icon(Icons.backspace_outlined,
+                  size: 20, color: colorScheme.onSurface)
               : Text(label,
-                  style: const TextStyle(
-                      fontSize: 20, fontWeight: FontWeight.w500)),
+                  style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500,
+                      color: colorScheme.onSurface)),
         ),
       ),
     );
