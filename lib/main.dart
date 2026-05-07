@@ -93,53 +93,54 @@ class _UangkuAppState extends State<UangkuApp> {
           ),
           darkTheme: ThemeData(
             useMaterial3: true,
-            brightness: Brightness.dark,
             colorScheme: ColorScheme.fromSeed(
               brightness: Brightness.dark,
-              seedColor: const Color(0xFF0F62FE),
-              primary: const Color(0xFF78A9FF),
-              secondary: const Color(0xFFA8A8A8),
-              tertiary: const Color(0xFF24A148),
-              error: const Color(0xFFFA4D56),
-              surface: const Color(0xFF161616),
-              onPrimary: const Color(0xFF161616),
-              onSecondary: const Color(0xFF161616),
-              onTertiary: const Color(0xFF161616),
-              onError: const Color(0xFF161616),
-              onSurface: const Color(0xFFF4F4F4),
-              outline: const Color(0xFF6F6F6F),
-              outlineVariant: const Color(0xFF393939),
-              surfaceVariant: const Color(0xFF262626),
+              seedColor: const Color(0xFF6366F1),
+              primary: const Color(0xFF818CF8),
+              secondary: const Color(0xFF64748B),
+              tertiary: const Color(0xFF34D399),
+              error: const Color(0xFFFB7185),
+              surface: const Color(0xFF0F172A), // Soft Navy
+              onSurface: const Color(0xFFF1F5F9),
+              outlineVariant: const Color(0xFF1E293B),
             ),
-            textTheme: GoogleFonts.ibmPlexSansTextTheme(ThemeData.dark().textTheme),
+            textTheme: GoogleFonts.outfitTextTheme(ThemeData.dark().textTheme),
             appBarTheme: const AppBarTheme(
-              backgroundColor: Color(0xFF161616),
-              foregroundColor: Color(0xFFF4F4F4),
+              backgroundColor: Color(0xFF0F172A),
+              foregroundColor: Color(0xFFF1F5F9),
               elevation: 0,
+              centerTitle: false,
               scrolledUnderElevation: 0,
-              shape: Border(bottom: BorderSide(color: Color(0xFF393939))),
+            ),
+            cardTheme: CardThemeData(
+              elevation: 0,
+              color: const Color(0xFF1E293B),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+                side: const BorderSide(color: Color(0xFF334155), width: 0.5),
+              ),
             ),
             navigationBarTheme: NavigationBarThemeData(
-              backgroundColor: const Color(0xFF262626),
-              elevation: 0,
-              indicatorColor: Colors.transparent,
+              backgroundColor: const Color(0xFF0F172A),
+              elevation: 8,
+              indicatorColor: const Color(0xFF6366F1).withOpacity(0.2),
               labelTextStyle: WidgetStateProperty.resolveWith((states) {
                 if (states.contains(WidgetState.selected)) {
-                  return GoogleFonts.ibmPlexSans(
+                  return GoogleFonts.outfit(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
-                      color: const Color(0xFF78A9FF));
+                      color: const Color(0xFF818CF8));
                 }
-                return GoogleFonts.ibmPlexSans(
+                return GoogleFonts.outfit(
                     fontSize: 12,
-                    fontWeight: FontWeight.normal,
-                    color: const Color(0xFFA8A8A8));
+                    fontWeight: FontWeight.w500,
+                    color: const Color(0xFF64748B));
               }),
               iconTheme: WidgetStateProperty.resolveWith((states) {
                 if (states.contains(WidgetState.selected)) {
-                  return const IconThemeData(color: Color(0xFF78A9FF), size: 24);
+                  return const IconThemeData(color: Color(0xFF818CF8), size: 24);
                 }
-                return const IconThemeData(color: Color(0xFFA8A8A8), size: 24);
+                return const IconThemeData(color: Color(0xFF64748B), size: 24);
               }),
             ),
           ),

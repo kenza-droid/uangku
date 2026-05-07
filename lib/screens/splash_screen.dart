@@ -112,7 +112,13 @@ class _SplashScreenState extends State<SplashScreen>
                   ),
                 );
               },
-              child: Image.asset('assets/icon.png', width: 120, height: 120),
+              child: Image.asset(
+                Theme.of(context).brightness == Brightness.dark
+                    ? 'assets/gelap.png'
+                    : 'assets/terang.png',
+                width: 120,
+                height: 120,
+              ),
             ),
 
             const SizedBox(height: 24),
@@ -165,7 +171,7 @@ class _SplashScreenState extends State<SplashScreen>
               child: Padding(
                 padding: const EdgeInsets.only(bottom: 32),
                 child: Text(
-                  'v1.0.0',
+                  'v1.2.6',
                   style: TextStyle(
                     fontSize: 11,
                     color: cs.outline,
@@ -180,4 +186,3 @@ class _SplashScreenState extends State<SplashScreen>
     );
   }
 }
-

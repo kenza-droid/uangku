@@ -77,6 +77,32 @@ class TransactionProvider extends ChangeNotifier {
 
   // ── CRUD ──────────────────────────────────────────────────────────────────
 
+  double get budgetProgress => monthlyBudget > 0 ? monthlyExpense / monthlyBudget : 0;
+
+  String get financialStatus {
+    final progress = budgetProgress;
+    if (progress >= 1.0) return 'BAHAYA';
+    if (progress >= 0.8) return 'WASPADA';
+    return 'AMAN';
+  }
+
+  String get financialAdvice {
+    final progress = budgetProgress;
+    if (progress >= 1.0) return 'Budget sudah habis! Stop pengeluaran non-primer sekarang.';
+    if (progress >= 0.8) return 'Pengeluaran hampir limit! Batasi jajan dan pengeluaran tidak penting.';
+    if (progress >= 0.5) return 'Sudah setengah jalan. Jaga ritme pengeluaranmu ya!';
+    return 'Kondisi aman. Tetap bijak dalam menggunakan uang!';
+  }
+
+  double get remainingDailyBudget {
+    final now = DateTime.now();
+    final lastDay = DateTime(now.year, now.month + 1, 0).day;
+    final remainingDays = lastDay - now.day + 1;
+    final remainingBudget = monthlyBudget - monthlyExpense;
+    if (remainingBudget <= 0) return 0;
+    return remainingBudget / remainingDays;
+  }
+
   Future<void> addTransaction({
     required String title,
     required double amount,

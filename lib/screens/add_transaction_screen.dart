@@ -257,38 +257,36 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
             // Amount display
             Container(
               width: double.infinity,
-              color: colorScheme.surfaceVariant,
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text('JUMLAH',
                       style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.bold,
                           color: colorScheme.outline,
-                          letterSpacing: 1.5)),
-                  const SizedBox(height: 8),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text('Rp',
-                          style: TextStyle(
-                              fontSize: 20,
-                              color: colorScheme.outline,
-                              fontWeight: FontWeight.w300)),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
+                          letterSpacing: 2)),
+                  const SizedBox(height: 12),
+                  FittedBox(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text('Rp',
+                            style: TextStyle(
+                                fontSize: 24,
+                                color: colorScheme.primary.withOpacity(0.5),
+                                fontWeight: FontWeight.w300)),
+                        const SizedBox(width: 12),
+                        Text(
                           _formattedAmount,
                           style: TextStyle(
-                              fontSize: 36,
+                              fontSize: 48,
                               fontWeight: FontWeight.bold,
                               color: colorScheme.onSurface),
-                          overflow: TextOverflow.ellipsis,
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -296,7 +294,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
             // Form fields
             Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
               child: Column(
                 children: [
                   // Title
@@ -305,11 +303,11 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                     child: _buildFormField(
                       'NAMA TRANSAKSI',
                       _title.isEmpty ? 'Ketuk untuk mengisi...' : _title,
-                      Icons.edit,
+                      Icons.edit_note,
                       isEmpty: _title.isEmpty,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 12),
                   Row(
                     children: [
                       Expanded(
@@ -318,33 +316,33 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                           child: _buildFormField(
                             'KATEGORI',
                             _category.isEmpty ? 'Pilih...' : _category,
-                            Icons.expand_more,
+                            Icons.category_outlined,
                             isEmpty: _category.isEmpty,
                           ),
                         ),
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: 12),
                       Expanded(
                         child: GestureDetector(
                           onTap: _pickDate,
                           child: _buildFormField(
                             'TANGGAL',
                             DateFormat('dd MMM yyyy', 'id_ID').format(_date),
-                            Icons.calendar_today,
+                            Icons.calendar_month_outlined,
                           ),
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 12),
                   // Notes
                   Container(
                     decoration: BoxDecoration(
-                      color: colorScheme.surfaceVariant,
-                      border: Border(
-                          bottom: BorderSide(color: colorScheme.outline)),
+                      color: colorScheme.surface,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: colorScheme.outlineVariant),
                     ),
-                    padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
+                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -354,6 +352,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                                 fontWeight: FontWeight.bold,
                                 color: colorScheme.outline,
                                 letterSpacing: 1.2)),
+                        const SizedBox(height: 4),
                         TextField(
                           controller: _noteController,
                           onChanged: (v) => _notes = v,
@@ -363,7 +362,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                             hintStyle:
                                 TextStyle(fontSize: 14, color: colorScheme.outline),
                             isDense: true,
-                            contentPadding: const EdgeInsets.only(top: 4),
+                            contentPadding: EdgeInsets.zero,
                           ),
                           style: TextStyle(fontSize: 14, color: colorScheme.onSurface),
                           maxLines: 2,
@@ -377,15 +376,14 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
             // Numpad
             Container(
-              color: colorScheme.outlineVariant,
-              padding: const EdgeInsets.all(2),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
               child: GridView.count(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 crossAxisCount: 3,
-                mainAxisSpacing: 2,
-                crossAxisSpacing: 2,
-                childAspectRatio: 2.2,
+                mainAxisSpacing: 8,
+                crossAxisSpacing: 8,
+                childAspectRatio: 1.8,
                 children: [
                   ...['1', '2', '3', '4', '5', '6', '7', '8', '9', '000', '0']
                       .map((e) => _buildKey(e)),
@@ -396,22 +394,26 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
             // Save button
             Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.fromLTRB(20, 10, 20, 24),
               child: SizedBox(
                 width: double.infinity,
-                height: 52,
+                height: 56,
                 child: ElevatedButton(
                   onPressed: _save,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: colorScheme.primary,
-                    foregroundColor: colorScheme.onPrimary,
-                    shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.zero),
+                    foregroundColor: Colors.white,
+                    elevation: 4,
+                    shadowColor: colorScheme.primary.withOpacity(0.4),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(28)),
                   ),
                   child: Text(
                       _isEditing ? 'SIMPAN PERUBAHAN' : 'SIMPAN TRANSAKSI',
                       style: const TextStyle(
-                          fontWeight: FontWeight.bold, letterSpacing: 1.2)),
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold, 
+                          letterSpacing: 1.2)),
                 ),
               ),
             ),
@@ -464,10 +466,18 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
       {bool isEmpty = false}) {
     final colorScheme = Theme.of(context).colorScheme;
     return Container(
-      padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
       decoration: BoxDecoration(
-        color: colorScheme.surfaceVariant,
-        border: Border(bottom: BorderSide(color: colorScheme.outline)),
+        color: colorScheme.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: colorScheme.outlineVariant),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.02),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          )
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -478,7 +488,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                   fontWeight: FontWeight.bold,
                   color: colorScheme.outline,
                   letterSpacing: 1.2)),
-          const SizedBox(height: 4),
+          const SizedBox(height: 6),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -487,11 +497,12 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                   value,
                   style: TextStyle(
                       fontSize: 14,
+                      fontWeight: FontWeight.w600,
                       color: isEmpty ? colorScheme.outline : colorScheme.onSurface),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
-              Icon(trailing, size: 16, color: colorScheme.outline),
+              Icon(trailing, size: 18, color: colorScheme.primary.withOpacity(0.5)),
             ],
           ),
         ],
@@ -501,19 +512,27 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
   Widget _buildKey(String label, {bool isBackspace = false}) {
     final colorScheme = Theme.of(context).colorScheme;
-    return Material(
-      color: isBackspace ? colorScheme.surfaceVariant : colorScheme.surface,
-      child: InkWell(
-        onTap: () => _onKeyTap(label),
-        child: Center(
-          child: isBackspace
-              ? Icon(Icons.backspace_outlined,
-                  size: 20, color: colorScheme.onSurface)
-              : Text(label,
-                  style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w500,
-                      color: colorScheme.onSurface)),
+    return Container(
+      decoration: BoxDecoration(
+        color: isBackspace ? colorScheme.surfaceVariant : colorScheme.surface,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: colorScheme.outlineVariant),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12),
+          onTap: () => _onKeyTap(label),
+          child: Center(
+            child: isBackspace
+                ? Icon(Icons.backspace_outlined,
+                    size: 20, color: colorScheme.onSurface)
+                : Text(label,
+                    style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
+                        color: colorScheme.onSurface)),
+          ),
         ),
       ),
     );

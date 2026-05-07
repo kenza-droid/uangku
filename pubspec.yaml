@@ -34,3 +34,5 @@ flutter:
   uses-material-design: true
   assets:
     - assets/icon.png
+    - assets/gelap.png
+    - assets/terang.png

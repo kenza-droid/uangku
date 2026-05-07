@@ -45,7 +45,9 @@ class DashboardScreen extends StatelessWidget {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(4),
                   child: Image.asset(
-                    'assets/icon.png',
+                    Theme.of(context).brightness == Brightness.dark
+                        ? 'assets/gelap.png'
+                        : 'assets/terang.png',
                     width: 32,
                     height: 32,
                   ),
@@ -177,6 +179,11 @@ class DashboardScreen extends StatelessWidget {
                     ],
                   ),
                 ),
+                const SizedBox(height: 24),
+
+                // Early Warning System Card
+                _buildEWS(provider, cs),
+
                 const SizedBox(height: 32),
 
                 // Weekly chart
@@ -329,6 +336,117 @@ class DashboardScreen extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+
+  Widget _buildEWS(TransactionProvider provider, ColorScheme cs) {
+    final status = provider.financialStatus;
+    final advice = provider.financialAdvice;
+    
+    Color statusColor;
+    IconData statusIcon;
+    Color bgColor;
+
+    switch (status) {
+      case 'BAHAYA':
+        statusColor = cs.error;
+        statusIcon = Icons.report_problem_rounded;
+        bgColor = cs.error.withOpacity(0.1);
+        break;
+      case 'WASPADA':
+        statusColor = Colors.orange;
+        statusIcon = Icons.warning_amber_rounded;
+        bgColor = Colors.orange.withOpacity(0.1);
+        break;
+      default:
+        statusColor = cs.tertiary;
+        statusIcon = Icons.check_circle_outline_rounded;
+        bgColor = cs.tertiary.withOpacity(0.1);
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: statusColor.withOpacity(0.2)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: statusColor.withOpacity(0.2),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(statusIcon, color: statusColor, size: 28),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text('EARLY WARNING SYSTEM',
+                        style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                            color: statusColor,
+                            letterSpacing: 1.2)),
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: statusColor,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Text(status,
+                          style: const TextStyle(
+                              fontSize: 9,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white)),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Text(advice,
+                    style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                        color: cs.onSurface.withOpacity(0.8))),
+                if (provider.remainingDailyBudget > 0) ...[
+                  const SizedBox(height: 12),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.5),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.savings_outlined, size: 14, color: statusColor),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Jatah harian: ',
+                          style: TextStyle(fontSize: 11, color: cs.onSurface.withOpacity(0.6)),
+                        ),
+                        Text(
+                          NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0)
+                              .format(provider.remainingDailyBudget),
+                          style: TextStyle(
+                              fontSize: 11, fontWeight: FontWeight.bold, color: statusColor),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
