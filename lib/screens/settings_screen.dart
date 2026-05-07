@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../providers/transaction_provider.dart';
+import '../utils/notification_service.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -67,6 +68,9 @@ class SettingsScreen extends StatelessWidget {
               _sectionHeader('TAMPILAN', colorScheme),
               _themeTile(context, provider, colorScheme),
 
+              _sectionHeader('NOTIFIKASI', colorScheme),
+              _reminderTile(context, provider, colorScheme),
+
               _sectionHeader('KEUANGAN', colorScheme),
               _tile(
                 icon: Icons.account_balance_wallet_outlined,
@@ -107,13 +111,13 @@ class SettingsScreen extends StatelessWidget {
               _tile(
                   icon: Icons.info_outline,
                   title: 'Versi Aplikasi',
-                  value: 'v1.0.0',
+                  value: 'v1.2.6',
                   cs: colorScheme),
 
               const SizedBox(height: 48),
               Center(
                 child: Text(
-                  'UANGKU V1.0.0',
+                  'UANGKU V1.2.6',
                   style: TextStyle(
                       fontSize: 10,
                       fontWeight: FontWeight.bold,
@@ -283,6 +287,109 @@ class SettingsScreen extends StatelessWidget {
         shape: Border(bottom: BorderSide(color: cs.outlineVariant)),
       ),
     );
+  }
+
+
+  Widget _reminderTile(
+      BuildContext context, TransactionProvider provider, ColorScheme cs) {
+    final timeStr = '${provider.reminderHour.toString().padLeft(2, '0')}:${provider.reminderMinute.toString().padLeft(2, '0')}';
+    
+    return Container(
+      color: cs.surface,
+      child: Column(
+        children: [
+          ListTile(
+            leading: Icon(Icons.notifications_active_outlined, color: cs.outline, size: 22),
+            title: Text('Pengingat Harian',
+                style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: cs.onSurface)),
+            subtitle: Text('Ingatkan saya untuk mencatat transaksi',
+                style: TextStyle(fontSize: 12, color: cs.outline)),
+            trailing: Switch(
+              value: provider.reminderEnabled,
+              onChanged: (val) {
+                // Update UI first
+                provider.setReminder(val, provider.reminderHour, provider.reminderMinute);
+                
+                // Then handle notification in background
+                if (val) {
+                  NotificationService().scheduleDailyReminder(
+                      provider.reminderHour, provider.reminderMinute);
+                } else {
+                  NotificationService().cancelReminder();
+                }
+              },
+              activeColor: cs.primary,
+            ),
+            shape: Border(bottom: BorderSide(color: cs.outlineVariant)),
+          ),
+          if (provider.reminderEnabled)
+            ListTile(
+              leading: const SizedBox(width: 22), // indent
+              title: Text('Waktu Pengingat',
+                  style: TextStyle(
+                      fontSize: 14,
+                      color: cs.onSurface)),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(timeStr,
+                      style: TextStyle(
+                          fontSize: 14,
+                          color: cs.primary,
+                          fontWeight: FontWeight.w500)),
+                  const SizedBox(width: 4),
+                  Icon(Icons.access_time, size: 16, color: cs.outline),
+                ],
+              ),
+              onTap: () => _selectTime(context, provider, cs),
+              shape: Border(bottom: BorderSide(color: cs.outlineVariant)),
+            ),
+          ListTile(
+            leading: const SizedBox(width: 22), // indent
+            title: Text('Tes Kirim Notifikasi',
+                style: TextStyle(
+                    fontSize: 14,
+                    color: cs.onSurface)),
+            trailing: Icon(Icons.send_outlined, size: 16, color: cs.primary),
+            onTap: () async {
+              await NotificationService().showTestNotification();
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Mencoba mengirim notifikasi tes...')),
+                );
+              }
+            },
+            shape: Border(bottom: BorderSide(color: cs.outlineVariant)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _selectTime(
+      BuildContext context, TransactionProvider provider, ColorScheme cs) async {
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay(hour: provider.reminderHour, minute: provider.reminderMinute),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: cs.copyWith(primary: cs.primary),
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (picked != null) {
+      // Update UI first
+      provider.setReminder(true, picked.hour, picked.minute);
+      // Then schedule in background
+      NotificationService().scheduleDailyReminder(picked.hour, picked.minute);
+    }
   }
 
   Future<void> _editName(

@@ -8,10 +8,12 @@ import 'screens/history_screen.dart';
 import 'screens/add_transaction_screen.dart';
 import 'screens/settings_screen.dart';
 import 'screens/splash_screen.dart';
+import 'utils/notification_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting('id_ID', null);
+  await NotificationService().init();
   runApp(
     ChangeNotifierProvider(
       create: (_) => TransactionProvider(),
@@ -41,50 +43,51 @@ class _UangkuAppState extends State<UangkuApp> {
           theme: ThemeData(
             useMaterial3: true,
             colorScheme: ColorScheme.fromSeed(
-              seedColor: const Color(0xFF0F62FE),
-              primary: const Color(0xFF0F62FE),
-              secondary: const Color(0xFF6F6F6F),
-              tertiary: const Color(0xFF198038),
-              error: const Color(0xFFDA1E28),
-              surface: Colors.white,
-              onPrimary: Colors.white,
-              onSecondary: Colors.white,
-              onTertiary: Colors.white,
-              onError: Colors.white,
-              onSurface: const Color(0xFF161616),
-              outline: const Color(0xFF8D8D8D),
-              outlineVariant: const Color(0xFFE0E0E0),
-              surfaceVariant: const Color(0xFFF4F4F4),
+              seedColor: const Color(0xFF6366F1), // Soft Indigo
+              primary: const Color(0xFF6366F1),
+              secondary: const Color(0xFF94A3B8),
+              tertiary: const Color(0xFF10B981), // Emerald
+              error: const Color(0xFFF43F5E), // Rose
+              surface: const Color(0xFFF9FAFB),
+              onSurface: const Color(0xFF1E293B),
+              outlineVariant: const Color(0xFFF1F5F9),
             ),
-            textTheme: GoogleFonts.ibmPlexSansTextTheme(),
+            textTheme: GoogleFonts.outfitTextTheme(),
             appBarTheme: const AppBarTheme(
               backgroundColor: Colors.white,
-              foregroundColor: Color(0xFF161616),
+              foregroundColor: Color(0xFF1E293B),
               elevation: 0,
+              centerTitle: false,
               scrolledUnderElevation: 0,
-              shape: Border(bottom: BorderSide(color: Color(0xFFE0E0E0))),
+            ),
+            cardTheme: CardThemeData(
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+                side: const BorderSide(color: Color(0xFFF1F5F9)),
+              ),
             ),
             navigationBarTheme: NavigationBarThemeData(
-              backgroundColor: const Color(0xFFF8F9FA),
-              elevation: 0,
-              indicatorColor: Colors.transparent,
+              backgroundColor: Colors.white,
+              elevation: 8,
+              indicatorColor: const Color(0xFF6366F1).withOpacity(0.1),
               labelTextStyle: WidgetStateProperty.resolveWith((states) {
                 if (states.contains(WidgetState.selected)) {
-                  return GoogleFonts.ibmPlexSans(
+                  return GoogleFonts.outfit(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
-                      color: const Color(0xFF0F62FE));
+                      color: const Color(0xFF6366F1));
                 }
-                return GoogleFonts.ibmPlexSans(
+                return GoogleFonts.outfit(
                     fontSize: 12,
-                    fontWeight: FontWeight.normal,
-                    color: const Color(0xFF6F6F6F));
+                    fontWeight: FontWeight.w500,
+                    color: const Color(0xFF94A3B8));
               }),
               iconTheme: WidgetStateProperty.resolveWith((states) {
                 if (states.contains(WidgetState.selected)) {
-                  return const IconThemeData(color: Color(0xFF0F62FE), size: 24);
+                  return const IconThemeData(color: Color(0xFF6366F1), size: 24);
                 }
-                return const IconThemeData(color: Color(0xFF6F6F6F), size: 24);
+                return const IconThemeData(color: Color(0xFF94A3B8), size: 24);
               }),
             ),
           ),

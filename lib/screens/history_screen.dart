@@ -18,6 +18,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
   String _search = '';
   String _filterType = 'Semua'; // Semua, Pengeluaran, Pemasukan
   String _filterCategory = 'Semua';
+  DateTime _selectedMonth = DateTime.now();
 
   final _searchController = TextEditingController();
 
@@ -37,7 +38,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
           (_filterType == 'Pemasukan' && !t.isExpense);
       final matchCat =
           _filterCategory == 'Semua' || t.category == _filterCategory;
-      return matchSearch && matchType && matchCat;
+      final matchMonth = t.date.year == _selectedMonth.year &&
+          t.date.month == _selectedMonth.month;
+      return matchSearch && matchType && matchCat && matchMonth;
     }).toList();
   }
 
@@ -115,6 +118,45 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     contentPadding:
                         const EdgeInsets.symmetric(vertical: 12),
                   ),
+                ),
+              ),
+
+              // Month Selector
+              Container(
+                margin: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  color: colorScheme.primary.withOpacity(0.05),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: colorScheme.primary.withOpacity(0.1)),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.chevron_left),
+                      onPressed: () => setState(() => _selectedMonth = DateTime(_selectedMonth.year, _selectedMonth.month - 1)),
+                    ),
+                    Column(
+                      children: [
+                        Text(
+                          DateFormat('MMMM yyyy', 'id_ID').format(_selectedMonth).toUpperCase(),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                            color: colorScheme.primary,
+                            letterSpacing: 1,
+                          ),
+                        ),
+                        if (_selectedMonth.year == DateTime.now().year && _selectedMonth.month == DateTime.now().month)
+                          Text('BULAN INI', style: TextStyle(fontSize: 9, color: colorScheme.outline, fontWeight: FontWeight.bold)),
+                      ],
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.chevron_right),
+                      onPressed: () => setState(() => _selectedMonth = DateTime(_selectedMonth.year, _selectedMonth.month + 1)),
+                    ),
+                  ],
                 ),
               ),
 

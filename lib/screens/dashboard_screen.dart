@@ -1,4 +1,4 @@
-import 'dart:math' show max;
+import 'dart:math' show max, min, pi;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
@@ -42,18 +42,13 @@ class DashboardScreen extends StatelessWidget {
           appBar: AppBar(
             title: Row(
               children: [
-                Container(
-                  width: 32,
-                  height: 32,
-                  decoration: BoxDecoration(
-                      color: cs.primary,
-                      borderRadius: BorderRadius.circular(4)),
-                  child: Center(
-                      child: Text('U',
-                          style: TextStyle(
-                              color: cs.onPrimary,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18))),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(4),
+                  child: Image.asset(
+                    'assets/icon.png',
+                    width: 32,
+                    height: 32,
+                  ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -83,26 +78,37 @@ class DashboardScreen extends StatelessWidget {
                 // Balance card
                 Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
-                      color: cs.primary,
-                      borderRadius: BorderRadius.circular(4)),
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [cs.primary, cs.primary.withOpacity(0.8)],
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: cs.primary.withOpacity(0.3),
+                          blurRadius: 20,
+                          offset: const Offset(0, 10),
+                        )
+                      ],
+                      borderRadius: BorderRadius.circular(24)),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text('SALDO SAAT INI',
                           style: TextStyle(
                               fontSize: 10,
-                              color: cs.onPrimary.withOpacity(0.7),
+                              color: Colors.white.withOpacity(0.7),
                               fontWeight: FontWeight.bold,
                               letterSpacing: 1.2)),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 8),
                       Text(_fmt(balance),
-                          style: TextStyle(
-                              fontSize: 30,
+                          style: const TextStyle(
+                              fontSize: 32,
                               fontWeight: FontWeight.bold,
-                              color: cs.onPrimary)),
-                      const SizedBox(height: 12),
+                              color: Colors.white)),
+                      const SizedBox(height: 20),
                       Row(
                         children: [
                           Expanded(
@@ -117,12 +123,21 @@ class DashboardScreen extends StatelessWidget {
                     ],
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 20),
 
                 // Budget progress
                 Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.03),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        )
+                      ],
                       border: Border.all(color: cs.outlineVariant)),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -136,33 +151,33 @@ class DashboardScreen extends StatelessWidget {
                                   color: cs.outline,
                                   fontWeight: FontWeight.bold,
                                   letterSpacing: 1.1)),
-                          Text('$budgetPct% terpakai',
+                          Text('$budgetPct%',
                               style: TextStyle(
-                                  fontSize: 10,
+                                  fontSize: 12,
                                   color: budgetColor,
                                   fontWeight: FontWeight.bold)),
                         ],
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 12),
                       ClipRRect(
-                        borderRadius: BorderRadius.circular(2),
+                        borderRadius: BorderRadius.circular(10),
                         child: LinearProgressIndicator(
                           value: budgetRatio,
                           backgroundColor: cs.outlineVariant,
                           valueColor:
                               AlwaysStoppedAnimation<Color>(budgetColor),
-                          minHeight: 6,
+                          minHeight: 8,
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 8),
                       Text(
                           '${_fmt(expense)} dari ${_fmt(provider.monthlyBudget)}',
                           style: TextStyle(
-                              fontSize: 11, color: cs.outline)),
+                              fontSize: 12, color: cs.outline, fontWeight: FontWeight.w500)),
                     ],
                   ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 32),
 
                 // Weekly chart
                 Text('Pengeluaran Mingguan',
@@ -172,8 +187,12 @@ class DashboardScreen extends StatelessWidget {
                         color: cs.onSurface)),
                 const SizedBox(height: 12),
                 Container(
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-                  color: cs.surfaceVariant,
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: cs.surface,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: cs.outlineVariant),
+                  ),
                   child: Column(
                     children: [
                       SizedBox(
@@ -181,15 +200,17 @@ class DashboardScreen extends StatelessWidget {
                         child: _WeeklyBarChart(
                             data: provider.weeklyExpenses,
                             color: cs.primary,
-                            bgColor: cs.outline.withOpacity(0.15)),
+                            bgColor: cs.primary.withOpacity(0.05)),
                       ),
-                      const SizedBox(height: 6),
+                      const SizedBox(height: 16),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: ['Mg 1', 'Mg 2', 'Mg 3', 'Mg 4', 'Mg 5']
                             .map((w) => Text(w,
                                 style: TextStyle(
-                                    fontSize: 10, color: cs.outline)))
+                                    fontSize: 10, 
+                                    fontWeight: FontWeight.w600,
+                                    color: cs.outline)))
                             .toList(),
                       ),
                     ],
@@ -205,20 +226,23 @@ class DashboardScreen extends StatelessWidget {
                         color: cs.onSurface)),
                 const SizedBox(height: 12),
                 Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                      border: Border.all(color: cs.outlineVariant)),
+                    color: cs.surface,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: cs.outlineVariant),
+                  ),
                   child: Column(
                     children: [
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          _legend('Pemasukan', cs.primary, cs),
+                          _legend('Masuk', cs.primary, cs),
                           const SizedBox(width: 12),
-                          _legend('Pengeluaran', cs.error, cs),
+                          _legend('Keluar', cs.error, cs),
                         ],
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 16),
                       SizedBox(
                         height: 140,
                         child: _GroupedBarChart(
@@ -227,7 +251,7 @@ class DashboardScreen extends StatelessWidget {
                           expenseColor: cs.error,
                         ),
                       ),
-                      const SizedBox(height: 6),
+                      const SizedBox(height: 12),
                       _monthLabels(cs),
                     ],
                   ),
@@ -236,15 +260,36 @@ class DashboardScreen extends StatelessWidget {
 
                 // Category breakdown
                 if (catEntries.isNotEmpty) ...[
-                  Text('Pengeluaran per Kategori',
+                  Text('Analisis Kategori',
                       style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                           color: cs.onSurface)),
                   const SizedBox(height: 12),
-                  ...catEntries.take(5).map(
-                        (e) => _categoryRow(e.key, e.value, expense, cs),
-                      ),
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: cs.surface,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: cs.outlineVariant),
+                    ),
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          height: 180,
+                          child: _CategoryDonutChart(
+                            entries: catEntries,
+                            total: expense,
+                            cs: cs,
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        ...catEntries.take(4).map(
+                              (e) => _categoryRow(e.key, e.value, expense, cs),
+                            ),
+                      ],
+                    ),
+                  ),
                   const SizedBox(height: 24),
                 ],
 
@@ -426,6 +471,92 @@ class DashboardScreen extends StatelessWidget {
 
 // ── Custom Charts ─────────────────────────────────────────────────────────────
 
+class _CategoryDonutChart extends StatelessWidget {
+  final List<MapEntry<String, double>> entries;
+  final double total;
+  final ColorScheme cs;
+
+  const _CategoryDonutChart({
+    required this.entries,
+    required this.total,
+    required this.cs,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomPaint(
+      painter: _DonutPainter(entries: entries, total: total, cs: cs),
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Total',
+              style: TextStyle(fontSize: 10, color: cs.outline, fontWeight: FontWeight.bold),
+            ),
+            Text(
+              NumberFormat.compactCurrency(locale: 'id_ID', symbol: 'Rp').format(total),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: cs.onSurface),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _DonutPainter extends CustomPainter {
+  final List<MapEntry<String, double>> entries;
+  final double total;
+  final ColorScheme cs;
+
+  _DonutPainter({required this.entries, required this.total, required this.cs});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = min(size.width, size.height) / 2;
+    const strokeWidth = 12.0;
+
+    final paint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = strokeWidth
+      ..strokeCap = StrokeCap.round;
+
+    // Background circle
+    canvas.drawCircle(center, radius - strokeWidth / 2, paint..color = cs.outlineVariant.withOpacity(0.5));
+
+    if (total <= 0) return;
+
+    double startAngle = -pi / 2;
+    final colors = [
+      cs.primary,
+      cs.tertiary,
+      Colors.orange,
+      cs.error,
+      Colors.purple,
+      Colors.teal,
+    ];
+
+    for (int i = 0; i < min(entries.length, 6); i++) {
+      final sweepAngle = (entries[i].value / total) * 2 * pi;
+      paint.color = colors[i % colors.length];
+      
+      canvas.drawArc(
+        Rect.fromCircle(center: center, radius: radius - strokeWidth / 2),
+        startAngle + 0.05, // Small gap
+        sweepAngle - 0.1,
+        false,
+        paint,
+      );
+      startAngle += sweepAngle;
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _DonutPainter old) => true;
+}
+
 class _WeeklyBarChart extends StatelessWidget {
   final List<double> data;
   final Color color;
@@ -450,23 +581,38 @@ class _BarPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final maxVal = data.fold<double>(0, (m, v) => max(m, v));
-    final barW = (size.width / data.length) * 0.55;
-    final gap = (size.width / data.length) * 0.45;
+    final barW = (size.width / data.length) * 0.45;
+    final gap = (size.width / data.length) * 0.55;
     final chartH = size.height;
 
     for (int i = 0; i < data.length; i++) {
       final x = i * (barW + gap) + gap / 2;
-      // bg
-      canvas.drawRect(
+      
+      // bg bar (full height)
+      final bgRRect = RRect.fromRectAndRadius(
         Rect.fromLTWH(x, 0, barW, chartH),
-        Paint()..color = bgColor,
+        const Radius.circular(10),
       );
-      // bar
+      canvas.drawRRect(bgRRect, Paint()..color = bgColor);
+
+      // actual data bar
       if (maxVal > 0 && data[i] > 0) {
         final h = (data[i] / maxVal) * chartH;
-        canvas.drawRect(
+        final barRRect = RRect.fromRectAndRadius(
           Rect.fromLTWH(x, chartH - h, barW, h),
-          Paint()..color = color,
+          const Radius.circular(10),
+        );
+        
+        // Gradient fill
+        final gradient = LinearGradient(
+          begin: Alignment.bottomCenter,
+          end: Alignment.topCenter,
+          colors: [color, color.withOpacity(0.7)],
+        );
+        
+        canvas.drawRRect(
+          barRRect,
+          Paint()..shader = gradient.createShader(Rect.fromLTWH(x, chartH - h, barW, h)),
         );
       }
     }
@@ -512,7 +658,7 @@ class _GroupedPainter extends CustomPainter {
       maxVal = max(maxVal, max(d['income']!, d['expense']!));
     }
     final groupW = size.width / data.length;
-    final barW = groupW * 0.28;
+    final barW = groupW * 0.25;
     final chartH = size.height;
 
     for (int i = 0; i < data.length; i++) {
@@ -520,14 +666,21 @@ class _GroupedPainter extends CustomPainter {
       final incH = (data[i]['income']! / maxVal) * chartH;
       final expH = (data[i]['expense']! / maxVal) * chartH;
 
-      canvas.drawRect(
-        Rect.fromLTWH(gx + groupW * 0.05, chartH - incH, barW, incH),
-        Paint()..color = incomeColor,
+      // Income bar (rounded top)
+      final incRRect = RRect.fromRectAndCorners(
+        Rect.fromLTWH(gx + groupW * 0.1, chartH - incH, barW, incH),
+        topLeft: const Radius.circular(4),
+        topRight: const Radius.circular(4),
       );
-      canvas.drawRect(
-        Rect.fromLTWH(gx + groupW * 0.05 + barW + 2, chartH - expH, barW, expH),
-        Paint()..color = expenseColor,
+      canvas.drawRRect(incRRect, Paint()..color = incomeColor);
+
+      // Expense bar (rounded top)
+      final expRRect = RRect.fromRectAndCorners(
+        Rect.fromLTWH(gx + groupW * 0.1 + barW + 4, chartH - expH, barW, expH),
+        topLeft: const Radius.circular(4),
+        topRight: const Radius.circular(4),
       );
+      canvas.drawRRect(expRRect, Paint()..color = expenseColor);
     }
   }
 

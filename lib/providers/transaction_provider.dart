@@ -9,13 +9,19 @@ class TransactionProvider extends ChangeNotifier {
   double _monthlyBudget = 5000000;
   String _userName = 'Pengguna';
   Map<String, double> _categoryBudgets = {};
-  ThemeMode _themeMode = ThemeMode.system;
+  ThemeMode _themeMode = ThemeMode.light;
+  bool _reminderEnabled = false;
+  int _reminderHour = 20; // Default 20:00
+  int _reminderMinute = 0;
 
   static const _txKey = 'uangku_transactions';
   static const _budgetKey = 'uangku_budget';
   static const _nameKey = 'uangku_name';
   static const _catBudgetKey = 'uangku_cat_budgets';
   static const _themeModeKey = 'uangku_theme_mode';
+  static const _reminderEnabledKey = 'uangku_reminder_enabled';
+  static const _reminderHourKey = 'uangku_reminder_hour';
+  static const _reminderMinuteKey = 'uangku_reminder_minute';
   static const _uuid = Uuid();
 
   List<Transaction> get transactions => List.unmodifiable(_transactions);
@@ -23,6 +29,9 @@ class TransactionProvider extends ChangeNotifier {
   String get userName => _userName;
   Map<String, double> get categoryBudgets => Map.unmodifiable(_categoryBudgets);
   ThemeMode get themeMode => _themeMode;
+  bool get reminderEnabled => _reminderEnabled;
+  int get reminderHour => _reminderHour;
+  int get reminderMinute => _reminderMinute;
 
   TransactionProvider() {
     _load();
@@ -47,11 +56,15 @@ class TransactionProvider extends ChangeNotifier {
       _categoryBudgets = map.map((k, v) => MapEntry(k, (v as num).toDouble()));
     }
 
-    final themeModeStr = prefs.getString(_themeModeKey) ?? 'system';
+    final themeModeStr = prefs.getString(_themeModeKey) ?? 'light';
     _themeMode = ThemeMode.values.firstWhere(
       (m) => m.name == themeModeStr,
-      orElse: () => ThemeMode.system,
+      orElse: () => ThemeMode.light,
     );
+
+    _reminderEnabled = prefs.getBool(_reminderEnabledKey) ?? false;
+    _reminderHour = prefs.getInt(_reminderHourKey) ?? 20;
+    _reminderMinute = prefs.getInt(_reminderMinuteKey) ?? 0;
 
     notifyListeners();
   }
@@ -135,6 +148,17 @@ class TransactionProvider extends ChangeNotifier {
     notifyListeners();
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_themeModeKey, mode.name);
+  }
+
+  Future<void> setReminder(bool enabled, int hour, int minute) async {
+    _reminderEnabled = enabled;
+    _reminderHour = hour;
+    _reminderMinute = minute;
+    notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_reminderEnabledKey, enabled);
+    await prefs.setInt(_reminderHourKey, hour);
+    await prefs.setInt(_reminderMinuteKey, minute);
   }
 
   // ── Computed ──────────────────────────────────────────────────────────────

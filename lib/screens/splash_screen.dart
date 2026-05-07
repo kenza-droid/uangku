@@ -112,7 +112,7 @@ class _SplashScreenState extends State<SplashScreen>
                   ),
                 );
               },
-              child: _WalletLogo(color: cs.primary, size: 100),
+              child: Image.asset('assets/icon.png', width: 120, height: 120),
             ),
 
             const SizedBox(height: 24),
@@ -124,16 +124,6 @@ class _SplashScreenState extends State<SplashScreen>
                 opacity: _textOpacity,
                 child: Column(
                   children: [
-                    Text(
-                      'Uangku',
-                      style: TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                        color: cs.primary,
-                        letterSpacing: 1.2,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
                     Text(
                       'Kelola keuanganmu dengan mudah',
                       style: TextStyle(
@@ -191,101 +181,3 @@ class _SplashScreenState extends State<SplashScreen>
   }
 }
 
-class _WalletLogo extends StatelessWidget {
-  final Color color;
-  final double size;
-  const _WalletLogo({required this.color, required this.size});
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: size,
-      height: size,
-      child: CustomPaint(
-        painter: _WalletPainter(color: color),
-      ),
-    );
-  }
-}
-
-class _WalletPainter extends CustomPainter {
-  final Color color;
-  _WalletPainter({required this.color});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final w = size.width;
-    final h = size.height;
-
-    final walletPaint = Paint()
-      ..color = color
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = w * 0.06
-      ..strokeCap = StrokeCap.round
-      ..strokeJoin = StrokeJoin.round;
-
-    final fillPaint = Paint()
-      ..color = color.withOpacity(0.1)
-      ..style = PaintingStyle.fill;
-
-    final walletRect = RRect.fromRectAndRadius(
-      Rect.fromLTWH(w * 0.08, h * 0.2, w * 0.7, h * 0.65),
-      Radius.circular(w * 0.08),
-    );
-    canvas.drawRRect(walletRect, fillPaint);
-    canvas.drawRRect(walletRect, walletPaint);
-
-    final flapPath = Path()
-      ..moveTo(w * 0.18, h * 0.2)
-      ..lineTo(w * 0.18, h * 0.12)
-      ..quadraticBezierTo(w * 0.18, h * 0.06, w * 0.26, h * 0.06)
-      ..lineTo(w * 0.68, h * 0.06)
-      ..quadraticBezierTo(w * 0.78, h * 0.06, w * 0.78, h * 0.14)
-      ..lineTo(w * 0.78, h * 0.2);
-    canvas.drawPath(flapPath, walletPaint);
-
-    canvas.drawLine(
-      Offset(w * 0.08, h * 0.48),
-      Offset(w * 0.78, h * 0.48),
-      walletPaint..strokeWidth = w * 0.025,
-    );
-
-    final coinCenter = Offset(w * 0.72, h * 0.55);
-    final coinRadius = w * 0.18;
-    
-    final coinFill = Paint()
-      ..color = color
-      ..style = PaintingStyle.fill;
-    
-    final coinBorder = Paint()
-      ..color = Colors.white
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = w * 0.04;
-
-    canvas.drawCircle(coinCenter, coinRadius, coinFill);
-    canvas.drawCircle(coinCenter, coinRadius, coinBorder);
-
-    final textPainter = TextPainter(
-      text: TextSpan(
-        text: 'U',
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: w * 0.18,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-      textDirection: TextDirection.ltr,
-    );
-    textPainter.layout();
-    textPainter.paint(
-      canvas,
-      Offset(
-        coinCenter.dx - textPainter.width / 2,
-        coinCenter.dy - textPainter.height / 2,
-      ),
-    );
-  }
-
-  @override
-  bool shouldRepaint(covariant _WalletPainter old) => old.color != color;
-}
