@@ -1,17 +1,18 @@
-# uangku
+# Uangku - Personal Finance Management
+Uangku adalah aplikasi manajemen keuangan berbasis mobile yang dibangun menggunakan framework Flutter. Aplikasi ini dirancang untuk membantu pengguna mengelola arus kas dengan pendekatan yang lebih disiplin melalui fitur analisis anggaran yang terintegrasi.
 
-A new Flutter project.
+# Fitur Unggulan
+- Early Warning System (EWS): Algoritma perhitungan jatah harian otomatis untuk memastikan pengeluaran tetap berada dalam batas anggaran bulanan yang telah ditentukan.
 
-## Getting Started
+- Analisis Kategori: Visualisasi data pengeluaran berdasarkan kategori menggunakan diagram interaktif untuk mempermudah identifikasi pos pengeluaran terbesar.
 
-This project is a starting point for a Flutter application.
+- Monitoring Budget: Indikator persentase realisasi anggaran bulanan secara real-time.
 
-A few resources to get you started if this is your first Flutter project:
+- Visualisasi Arus Kas: Grafik perbandingan pemasukan dan pengeluaran dalam rentang waktu tertentu.
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+# Tampilan Aplikasi
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+<img width="2844" height="2160" alt="2026-05-07_15-14-35_027" src="https://github.com/user-attachments/assets/dd64dad3-c529-4f80-a9cb-2952b16daf2a" />
+
+
+Developed by kenza-droid
